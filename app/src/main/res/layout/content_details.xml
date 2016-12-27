@@ -37,7 +37,7 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:text="Project"
+                    android:text="@string/project"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/textView16"
@@ -50,7 +50,7 @@
             </LinearLayout>
 
             <TextView
-                android:text="Task"
+                android:text="@string/task"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
@@ -59,7 +59,7 @@
                 android:layout_weight="1" />
 
             <TextView
-                android:text="Client"
+                android:text="@string/client"
                 android:layout_marginTop="20dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -73,10 +73,9 @@
                 android:layout_marginTop="20dp">
 
                 <TextView
-                    android:text="Date"
+                    android:text="@string/date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:drawableLeft="@drawable/calendar_a"
                     android:id="@+id/textView17"
                     android:textSize="18sp"
                     android:gravity="center|left"
@@ -110,7 +109,6 @@
         android:text="Task added successfully."
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
         android:textStyle="normal|bold"
         android:id="@+id/textView20"
         android:layout_alignParentBottom="true"

@@ -33,6 +33,30 @@
         android:visibility="gone"
         android:textColor="#ffff3f49"/>-->
 
+
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerview1"
+            android:scrollbars="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_weight="0.65"/>
+
+        <TextView
+            android:text="Total Hours: "
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|left"
+            android:padding="8dp"
+            android:textColor="@color/background"
+            android:gravity="center"
+            android:background="@drawable/rounded_corner"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:id="@+id/textView18" />
+
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fabBtn"
             android:layout_width="wrap_content"
@@ -46,30 +70,6 @@
             app:rippleColor="@color/colorAccent2"
             android:layout_marginBottom="@dimen/activity_vertical_margin"
             android:layout_marginRight="@dimen/activity_horizontal_margin"
-            app:borderWidth = "0dp" />
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recyclerview1"
-            android:scrollbars="vertical"
-            android:layout_width="fill_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_weight="0.65">
-
-        </android.support.v7.widget.RecyclerView>
-
-        <TextView
-            android:text="Total Hours: "
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|left"
-            android:padding="8dp"
-            android:textColor="@color/background"
-            android:gravity="center"
-            android:background="@drawable/rounded_corner"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"
-            android:id="@+id/textView18" />
+            app:borderWidth="0dp"/>
     </android.support.design.widget.CoordinatorLayout>
 </LinearLayout>

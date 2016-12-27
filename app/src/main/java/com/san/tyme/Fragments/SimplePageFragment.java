@@ -135,7 +135,7 @@ public class SimplePageFragment extends Fragment {
         ((TymeActivity)getActivity()).setFragmentRefreshListener(new TymeActivity.FragmentRefreshListener() {
             @Override
             public void onRefresh() {
-                 refreshRecycler();
+                refreshRecycler();
             }
         });
     }

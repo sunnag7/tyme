@@ -5,7 +5,6 @@ package com.san.tyme;
  */
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
 import android.app.Application;
 
@@ -15,8 +14,5 @@ public class TymeApplication extends Application implements Serializable{
     //public static ArrayList<Details> mReportArr = null;
 
     public static String reportDate = "";
-    public static String reportPath = "";
 
-    public static int isSynced = 0;
-    public static String reportAddressCountry = "";
 }

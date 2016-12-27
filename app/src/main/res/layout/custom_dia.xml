@@ -6,31 +6,29 @@
     android:layout_height="wrap_content"
     android:padding="15dp"
     android:layout_centerVertical="true"
-    android:id="@+id/custom_toast_layout"
-    >
+    android:id="@+id/custom_toast_layout">
 
     <TextView
-        android:text="Fill in your details"
+        android:text="@string/fill_in"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="18sp"
-        android:padding="10dp"
+        android:layout_marginBottom="10dp"
         android:id="@+id/textView8"
         android:textStyle="normal|bold" />
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginBottom="10dp">
 
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:inputType="date"
-
             android:ems="10"
-            android:hint="Date"
-            android:paddingLeft="16dp"
+            android:hint="@string/date"
             android:id="@+id/editText6"
             android:layout_weight="1" />
 
@@ -45,26 +43,24 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:text="Project Name"
+        android:text="@string/project_name"
         android:drawableRight="@drawable/ic_arrow_drop_down_black_24dp"
-         android:ems="10"
+        android:ems="10"
         android:gravity="left"
-        android:padding="10dp"
+        android:layout_marginBottom="10dp"
         android:id="@+id/editText3"
-        android:textSize="24sp" />
+        android:textSize="22sp" />
 
     <TextView
         android:text=""
-        android:padding="5dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
         android:id="@+id/textView5" />
 
     <Spinner
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
         android:layout_marginBottom="10dp"
         android:id="@+id/spinner" />
 
@@ -73,9 +69,9 @@
         android:layout_height="wrap_content"
         android:inputType="textMultiLine"
         android:ems="10"
-        android:paddingLeft="18dp"
         android:minLines="3"
-        android:hint="Description"
+        android:hint="@string/description"
+        android:layout_marginBottom="10dp"
         android:id="@+id/editText5" />
 
     <EditText
@@ -83,33 +79,29 @@
         android:layout_height="wrap_content"
         android:inputType="time"
         android:ems="10"
-        android:hint="Time"
-        android:layout_marginTop="10dp"
-        android:paddingLeft="18dp"
+        android:hint="@string/time"
+        android:layout_marginBottom="10dp"
         android:id="@+id/editText7" />
 
     <LinearLayout
         android:orientation="horizontal"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:gravity="left"
-        android:padding="8dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <Button
-            android:text="TRACK"
+            android:text="@string/track"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/button3"
-            />
+            android:id="@+id/button3" />
 
         <Button
-            android:text="CANCEL"
-            android:layout_marginLeft="15dp"
+            android:text="@string/cancel"
+            android:layout_marginLeft="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/button2"
-            />
+            android:id="@+id/button2" />
     </LinearLayout>
 
 </LinearLayout>
