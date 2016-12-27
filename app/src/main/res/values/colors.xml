@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--<color name="colorPrimary">#3F51B5</color>-->
+    <color name="colorPrimary">#323A45</color>
+    <color name="colorPrimaryDark">#d0323a45</color>
+    <!-- <color name="colorPrimaryDark">#14a1f1</color>-->
+    <!-- <color name="colorAccent">#FF4081</color>-->
+    <color name="colorAccent">#36af46</color>
+    <color name="colorAccent2">#98cb5f</color>
+    <color name="background">#f0f4f7</color>
+    <color name="bgColor">#354052</color>
+    <color name="alert">#ff8c75</color>
+    <color name="date_custom_item_unselected_indicator">#ff5c5c5c</color>
+   <!-- <color name="date_custom_item_selected_indicator">#ffff7709</color>-->
+    <color name="date_custom_item_selected_indicator">#98cb5f</color>
+
+    <color name="date_item_unselected_indicator">#ff5c5c5c</color>
+    <color name="date_item_selected_indicator">#ffff353b</color>
+
+    <color name="date_item_background">#ff5c5c5c</color>
+    <color name="date_item_month_name">#fffcfcfc</color>
+    <color name="date_item_day_name">#fffdfdfd</color>
+
+    <color name="date_custom_item_background">#ff3b3b3b</color>
+    <color name="date_custom_item_month_name">#fffcfcfc</color>
+    <color name="date_custom_item_day_name">#fffcfcfc</color>
+    <color name="date_custom_item_day">#fffcfcfc</color>
+
+</resources>
