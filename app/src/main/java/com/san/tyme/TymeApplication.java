@@ -8,6 +8,8 @@ import java.io.Serializable;
 
 import android.app.Application;
 
+import com.san.tyme.utils.TypefaceUtil;
+
 @SuppressWarnings("serial")
 public class TymeApplication extends Application implements Serializable{
 
@@ -15,4 +17,9 @@ public class TymeApplication extends Application implements Serializable{
 
     public static String reportDate = "";
 
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        TypefaceUtil.overrideFont(getApplicationContext(), "SERIF", "OpenSans-Regular.ttf");
+    }
 }

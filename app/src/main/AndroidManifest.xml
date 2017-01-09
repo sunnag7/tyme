@@ -10,13 +10,13 @@
         android:name=".TymeApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
+
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:icon="@drawable/tyme_logo"
             android:name=".TymeActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"
+             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activity.DomainActivity"
@@ -37,7 +37,7 @@
         <activity
             android:name=".activity.NotificationOne"
             android:screenOrientation="portrait"
-            android:label="Details of Notification One"
+            android:label="Recieved Notification"
             android:parentActivityName=".TymeActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -48,6 +48,7 @@
             android:label="@string/title_activity_details"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"/>
+
     </application>
 
 </manifest>

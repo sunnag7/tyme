@@ -7,6 +7,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -16,6 +22,9 @@ import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearSnapHelper;
+import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -101,6 +110,7 @@ public class TymeActivity extends AppCompatActivity
     long dateFrg;
     Date start = null,end = null,defaultDate = null;
     Calendar myCalendar = Calendar.getInstance();
+    public static TextView meditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +118,9 @@ public class TymeActivity extends AppCompatActivity
         setContentView(R.layout.activity_tyme);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        toolbar.setTitle(Html.fromHtml("<font face='verdana' color='#ffffff'><b>tyme</b></font>" +
+                "<font color='#A4D377'>.</b></font><font face='verdana' color='#ffffff'><b>co</b></font>"));
 
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         String restoredText = prefs.getString("id", null);
@@ -136,6 +149,8 @@ public class TymeActivity extends AppCompatActivity
 
         View mHeaderView;
         TextView mDrawerHeaderTitle, mDrawerHeaderName;
+        meditText = (TextView)findViewById(R.id.textView24);
+
         /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -146,6 +161,7 @@ public class TymeActivity extends AppCompatActivity
 
         pager = (ViewPager) findViewById(R.id.pager);
         dateList = (DateRecyclerView) findViewById(R.id.date_list);
+        snapHelper.attachToRecyclerView(dateList);
 
         dateList.addItemDecoration(new RecyclerViewInsetDecoration(this, R.dimen.date_card_insets));
         //dateList.addItemDecoration(new RecyclerViewInsetDecoration(TymeActivity.this));
@@ -166,22 +182,21 @@ public class TymeActivity extends AppCompatActivity
             start = PagerDatePickerDateFormat.DATE_PICKER_DD_MM_YYYY_FORMAT.parse(""+formatted);
             end = PagerDatePickerDateFormat.DATE_PICKER_DD_MM_YYYY_FORMAT.parse(""+formatted1);
             String formattedDate = "";
-            if(recievedDate.equals(""))
-            {
+            if(recievedDate.equals("")) {
                 defaultDate = PagerDatePickerDateFormat.DATE_PICKER_DD_MM_YYYY_FORMAT.parse(currentDateandTime);
             }
-            else{
+            else {
                // DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
               //  Date date = null;
                 try {
                     DateFormat originalFormat = new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);
-                    DateFormat targetFormat = new SimpleDateFormat("dd-MM-yyyy");
+
                     Date date = originalFormat.parse(recievedDate);
-                    formattedDate = targetFormat.format(date);
+                    formattedDate = sdf1.format(date);
 
                     //date = (Date) formatter.parse(recievedDate);
                 } catch (ParseException e) {
-                    e.printStackTrace();
+                    e.printStackTrace();;
                 }
                 defaultDate = PagerDatePickerDateFormat.DATE_PICKER_DD_MM_YYYY_FORMAT.parse(formattedDate);
             }
@@ -205,6 +220,7 @@ public class TymeActivity extends AppCompatActivity
                 datePosition = position;
                 dateFrg = date;
                 //updateMenuTitles(currentDate);
+                //showTimerChanges(currentDate);
                 //invalidateOptionsMenu();
                 return SimplePageFragment.newInstance(position, date);
             }
@@ -219,22 +235,47 @@ public class TymeActivity extends AppCompatActivity
                /* Toast.makeText(getBaseContext(), sdf.format(dateItem.getDate())
                         + " "+TymeApplication.reportDate, Toast.LENGTH_SHORT)
                         .show();*/
+               // showTimerChanges( sdf.format(dateItem.getDate()));
                 //User clicked date item from top date picker
             }
 
             @Override
             public void onDatePickerPageSelected(int position) {
                 //User changed date using swipe (left/right)
+             //  showTimerChanges(currentDate);
+               // smoothScrollToPosition(position);
+                dateList.getDateAdapter().setSelectedDate(position);
+
             }
 
             @Override
             public void onDatePickerPageStateChanged(int state) {
+
                 //User changed page
             }
 
             @Override
             public void onDatePickerPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 //User changed page
+
+
+                DateItem dateItem = dateList.getDateAdapter().getItem(position);
+
+                int day = dateItem.getDate().getDay();
+                  if(day==0 ){
+                      if(position>6)
+                        dateList.scrollToPosition( position-6);
+                      else
+                          dateList.scrollToPosition(1);
+                  }
+
+                if (day== 1){
+
+                }
+
+                showTimerChanges(sdf.format(dateItem.getDate()));
+
+               // showTimerChanges( sdf.format());
             }
         });
 
@@ -259,11 +300,11 @@ public class TymeActivity extends AppCompatActivity
                         dateList.getDateAdapter()) {
                     @Override
                     protected Fragment getFragment(int position, long date) {
-                        /* Toast.makeText(getBaseContext(), "in frag "+TymeApplication.reportDate, Toast.LENGTH_LONG)
-                        .show();*/
+
                         currentDate = sdf.format(date);
                         datePosition = position;
                         dateFrg = date;
+                        //showTimerChanges();
                         //updateMenuTitles(currentDate);
                         //invalidateOptionsMenu();
                         return SimplePageFragment.newInstance(position, date);
@@ -307,6 +348,7 @@ public class TymeActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+
         //updateViewpager();
     }
 
@@ -315,8 +357,6 @@ public class TymeActivity extends AppCompatActivity
                 dateList.getDateAdapter()) {
             @Override
             protected Fragment getFragment(int position, long date) {
-               /* Toast.makeText(getBaseContext(), "in frag "+TymeApplication.reportDate, Toast.LENGTH_LONG)
-                        .show();*/
                 currentDate = sdf.format(date);
                 datePosition = position;
                 dateFrg = date;
@@ -374,9 +414,7 @@ public class TymeActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         //super.onCreateOptionsMenu(menu);
-
         getMenuInflater().inflate(R.menu.tyme, menu);
-
         //this.menu = menu;
 
         return true;
@@ -396,7 +434,38 @@ public class TymeActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    /*private void updateMenuTitles(String strDate) {
+    private void showTimerChanges(String currentDateandTime) {
+
+       // Toast.makeText(getBaseContext(), "in show "+TymeApplication.reportDate, Toast.LENGTH_LONG)
+       //         .show();
+        Database db = new Database(TymeActivity.this);
+        String tot = db.getdaysTotal(currentDateandTime);
+        if(!tot.equals("")&& tot!=null) {
+            String min = "";
+            System.out.println("***tot "+tot);
+            int m = Math.round(Float.valueOf(tot).floatValue()) / 60;
+            int h = m / 60;
+
+            if (m > 60) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(Calendar.HOUR_OF_DAY, h);
+                calendar.set(Calendar.MINUTE, m);
+                /*calendar.set(Calendar.MILLISECOND, 0);
+                calendar.set(Calendar.SECOND, 37540);*/
+                min = new SimpleDateFormat("mm").format(calendar.getTime());
+            } else {
+                min = "" + m;
+            }
+
+            meditText.setText("Total Hours\n" + h + ":" + min);
+            //((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle("Total- " + h + ":" + min);
+        }
+        else{
+            meditText.setText("Total Hours\n00 : 00");
+            // ((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle("Total- 00:00");
+        }
+    }
+        /*private void updateMenuTitles(String strDate) {
         MenuItem mMenuItem = menu.findItem(R.id.action_settings);
         for (int i=0; i<mTotTimerArr.size();i++){
             String min = "";
@@ -461,205 +530,6 @@ public class TymeActivity extends AppCompatActivity
         return true;
     }
 
-    /*public void spinnerExpanded(){
-
-        final AlertDialog.Builder dialogBuilderMain = new AlertDialog.Builder(TymeActivity.this);
-        LayoutInflater inflater = TymeActivity.this.getLayoutInflater();
-        final View dialogViewMain = inflater.inflate(R.layout.custom_dia, null);
-        dialogBuilderMain.setView(dialogViewMain);
-
-        final AlertDialog alertDialogMain = dialogBuilderMain.create();
-
-        Spinner spinner = (Spinner) dialogViewMain.findViewById(R.id.spinner);
-        // Spinner click listener
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                 selectedItemText = ""+ parent.getItemAtPosition(position);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                selectedItemText = ""+ parent.getItemAtPosition(0);
-            }
-        });
-        // Spinner Drop down elements
-
-        Database adb = new Database(this);
-        ArrayList<Task> mTaskArray = adb.getTasks();
-
-        List<String> strArrTask = new ArrayList<String>();
-
-        for (int i = 0; i<mTaskArray.size(); i++){
-            strArrTask.add(""+mTaskArray.get(i).getTask_name());
-        }
-
-        // Creating adapter for spinner
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item, strArrTask);
-
-        // Drop down layout style - list view with radio button
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        // attaching data adapter to spinner
-        spinner.setAdapter(dataAdapter);
-
-        final TextView clientname = (TextView) dialogViewMain.findViewById(R.id.textView5);
-
-        final TextView projEdit = (TextView) dialogViewMain.findViewById(R.id.editText3);
-        projEdit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(TymeActivity.this);
-                LayoutInflater inflater = TymeActivity.this.getLayoutInflater();
-                final View dialogView = inflater.inflate(R.layout.custom_dia_, null);
-                dialogBuilder.setView(dialogView);
-
-                expListView = (ExpandableListView) dialogView.findViewById(R.id.laptop_list);
-                final ExpandableListAdapter expListAdapter = new ExpandableListAdapter(
-                        TymeActivity.this, groupList, laptopCollection);
-                expListView.setAdapter(expListAdapter);
-
-                //setGroupIndicatorToRight();
-
-                final AlertDialog alertDialog = dialogBuilder.create();
-                expListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
-
-                    public boolean onChildClick(ExpandableListView parent, View v,
-                                                int groupPosition, int childPosition, long id) {
-                        final String selected = (String) expListAdapter.getChild(
-                                groupPosition, childPosition);
-                        final String selectedGrp = (String) expListAdapter.getGroup(
-                                groupPosition);
-
-                        Toast.makeText(getBaseContext(), selected+" "+selectedGrp, Toast.LENGTH_SHORT)
-                                .show();
-                        projEdit.setText(""+selected);
-                        clientname.setText(""+selectedGrp);
-
-                        alertDialog.cancel();
-                        return true;
-                    }
-                });
-                alertDialog.show();
-            }
-        });
-
-        final EditText editDesc = (EditText) dialogViewMain.findViewById(R.id.editText5);
-        final EditText editTotalTime = (EditText) dialogViewMain.findViewById(R.id.editText7);
-        final EditText currentDate = (EditText) dialogViewMain.findViewById(R.id.editText6);
-
-        //String currentDateandTime = sdf.format();
-        SimpleDateFormat sdfTemp = new SimpleDateFormat( "dd/MM/yyyy", Locale.US);
-        currentDate.setText(""+sdfTemp.format(new Date()));
-
-        dateListener = new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear,
-                                  int dayOfMonth) {
-                myCalendar.set(Calendar.YEAR, year);
-                myCalendar.set(Calendar.MONTH, monthOfYear);
-                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                dateVal = updateLabel();
-                currentDate.setText(""+dateVal);
-            }
-        };
-
-        Button btnSubmit = (Button) dialogViewMain.findViewById(R.id.button3);
-        Button btnCancel = (Button) dialogViewMain.findViewById(R.id.button2);
-
-        ImageButton imgCal = (ImageButton) dialogViewMain.findViewById(R.id.imageView4);
-        imgCal.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new DatePickerDialog(TymeActivity.this, dateListener, myCalendar
-                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
-            }
-        });
-
-        btnSubmit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //aMainTimerSub = new Timer();
-                String tot_time = editTotalTime.getText().toString();
-                double time1 = 0 ;
-                if (!tot_time.equals("")) {
-                    //double number = Double.parseDouble(tot_time);
-                    int decimal = Integer.parseInt(tot_time.split(":")[0]);
-                    int fractional = Integer.parseInt(tot_time.split(":")[1]);
-
-                    fractional = fractional * 60000;
-                    decimal = decimal * 3600000;
-
-                    time1 = (fractional + decimal) / 1000;
-
-                    Log.d("total: ", "" + time1);
-                }
-
-                String clName = clientname.getText().toString();
-                String prName = projEdit.getText().toString();
-                long time = System.currentTimeMillis();
-                if(clName.length()>0&& email.length()>0){
-
-                    String start_dt = ""+currentDate.getText().toString();
-                    DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-                    Date date = null;
-                    try {
-                        date = (Date) formatter.parse(start_dt);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                    //SimpleDateFormat newFormat = new SimpleDateFormat("MM-dd-yyyy");
-                    String finalString = sdf.format(date);
-
-                    hm = new HashMap<String, String>();
-
-                    hm.put("project",""+prName);
-                    hm.put("email",""+email);
-                    hm.put("client",""+clName);
-                    hm.put("date",""+finalString); //issue with date always paassing +1day or -1
-                    hm.put("desc",""+editDesc.getText().toString());
-                    hm.put("task",""+selectedItemText);
-                    hm.put("time",""+(time/1000.0f));
-                    hm.put("total",""+time1);
-                    hm.put("subdomain",""+subdomain);
-
-                    if (isNetworkConnected()&& hm.size()>0){
-                        AsyncTaskSubmit runner = new AsyncTaskSubmit();
-                        runner.execute();
-                        alertDialogMain.dismiss();
-                    }
-                    else if(hm.size()==0){
-                        showToast("Failed to upload",0);
-                    }
-                    else {
-                        displayNoNetworkDialog();
-                    }
-                }
-            }
-        });
-
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                alertDialogMain.dismiss();
-            }
-        });
-
-        alertDialogMain.show();
-    }*/
-
-    //String dateVal = "";
-
-    //DatePickerDialog.OnDateSetListener dateListener ;
-
-    /*private String updateLabel() {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
-        return sdf.format(myCalendar.getTime());
-    }*/
-
     private void createGroupList() {
         groupList = new ArrayList<String>();
         Database db = new Database(this);
@@ -709,21 +579,6 @@ public class TymeActivity extends AppCompatActivity
 
     public OkHttpClient client = new OkHttpClient();
 
-    String post(String url, String subdomain) throws IOException {
-        // RequestBody body = RequestBody.create(JSON, json);
-        FormBody.Builder formBuilder = new FormBody.Builder()
-                .add("subdomain", subdomain);
-        RequestBody formBody = formBuilder.build();
-
-        Request request = new Request.Builder()
-                .url(url)
-                .post(formBody)
-                .build();
-        Response response = client.newCall(request).execute();
-
-        return response.body().string();
-    }
-
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
 
@@ -757,7 +612,8 @@ public class TymeActivity extends AppCompatActivity
         }
 
         protected void onPostExecute(Bitmap result) {
-            bmImage.setImageBitmap(result);
+            bmImage.setImageBitmap(getRoundedCornerBitmap(result,100));
+           // bmImage.setImageBitmap(result);
         }
     }
 
@@ -784,37 +640,6 @@ public class TymeActivity extends AppCompatActivity
 
         }
     }
-
-
-
-   /* String postTask(String url, HashMap<String,String> hm) throws IOException {
-        // RequestBody body = RequestBody.create(JSON, json);
-        FormBody.Builder formBuilder = new FormBody.Builder();
-
-        Iterator it = hm.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry)it.next();
-            System.out.println(pair.getKey() + " = " + pair.getValue());
-            formBuilder.add(""+pair.getKey().toString(), ""+pair.getValue().toString());
-            it.remove(); // avoids a ConcurrentModificationException
-        }
-
-        RequestBody formBody = formBuilder.build();
-
-        Request request = new Request.Builder()
-                .url(url)
-                .post(formBody)
-                .build();
-        Response response = client.newCall(request).execute();
-
-        if (response.isSuccessful()) {
-            return response.body().string();
-        }
-        else
-        {
-            return "Failed";
-        }
-    }*/
 
     public void displayNoNetworkDialog(){
         new AlertDialog.Builder(this)
@@ -952,8 +777,7 @@ public class TymeActivity extends AppCompatActivity
                 // }
                 updateViewpager();
             }
-            else
-            {
+            else {
                 Toast.makeText(getBaseContext(), "Unable to load data. ", Toast.LENGTH_SHORT)
                         .show();
             }
@@ -1009,6 +833,61 @@ public class TymeActivity extends AppCompatActivity
     public interface FragmentRefreshListener{
         void onRefresh();
     }
+
+        public Bitmap getRoundedCornerBitmap(Bitmap bitmap, int pixels) {
+            Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(output);
+
+            final int color = 0xff424242;
+            final Paint paint = new Paint();
+            final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+            final RectF rectF = new RectF(rect);
+            final float roundPx = pixels;
+
+            paint.setAntiAlias(true);
+            canvas.drawARGB(0, 0, 0, 0);
+            paint.setColor(color);
+            canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
+
+            paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+            canvas.drawBitmap(bitmap, rect, rect, paint);
+
+            return output;
+        }
+
+    LinearSnapHelper snapHelper = new LinearSnapHelper() {
+        @Override
+        public int findTargetSnapPosition(RecyclerView.LayoutManager layoutManager, int velocityX, int velocityY) {
+            View centerView = findSnapView(layoutManager);
+            if (centerView == null) {
+                return RecyclerView.NO_POSITION;
+            }
+
+            int position = layoutManager.getPosition(centerView);
+            int targetPosition = -1;
+            if (layoutManager.canScrollHorizontally()) {
+                if (velocityX < 0) {
+                    targetPosition = position - 1;
+                } else {
+                    targetPosition = position + 1;
+                }
+            }
+
+            if (layoutManager.canScrollVertically()) {
+                if (velocityY < 0) {
+                    targetPosition = position - 1;
+                } else {
+                    targetPosition = position + 1;
+                }
+            }
+
+            final int firstItem = 0;
+            final int lastItem = layoutManager.getItemCount() - 1;
+            targetPosition = Math.min(lastItem, Math.max(targetPosition, firstItem));
+            return targetPosition;
+        }
+    };
+
 }
 
   /*  byte[] data = text.getBytes("UTF-8");

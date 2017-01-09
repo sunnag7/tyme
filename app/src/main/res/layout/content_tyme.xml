@@ -13,13 +13,15 @@
         android:id="@+id/date_list"
         android:layout_width="match_parent"
         android:layout_height="100dp"
+        app:spanCount="6"
         android:background="@color/colorPrimaryDark"/>
 
     <android.support.v4.view.ViewPager
         android:id="@+id/pager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/date_list" />
+        android:layout_height="wrap_content"
+        android:layout_below="@id/date_list"
+        android:layout_above="@+id/linearLayout" />
 
     <ProgressBar
         style="?android:attr/progressBarStyle"
@@ -29,6 +31,27 @@
         android:layout_centerVertical="true"
         android:id="@+id/progressBar"
         android:visibility="invisible"/>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:background="@color/bgColor"
+        android:padding="3dp"
+        android:id="@+id/linearLayout">
+
+        <TextView
+            android:text="00:00"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:textColor="#ffffff"
+            android:textSize="14sp"
+            android:id="@+id/textView24" />
+    </LinearLayout>
 
     <!--<solar.blaz.date.week.WeekDatePicker
         android:id="@+id/date_picker"

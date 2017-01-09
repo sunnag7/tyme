@@ -102,7 +102,25 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 //String sleepTime = time.getText().toString();
                 runner.execute(subdomain,email,password);
             }
-            else {
+            else if (isNetworkConnected() && email.length()==0 && editPass.getText().toString().length()==0){
+                new AlertDialog.Builder(this)
+                        .setTitle("Invalid Details")
+                        /*.setMessage("It looks like your internet connection is off. Please turn it " +
+                                "on and try again")*/
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        }).setIcon(android.R.drawable.ic_dialog_alert).show();
+
+                if(email.length()==0 ){
+                    editEmail.setError("Enter valid Email Id");
+                }
+
+                if(editPass.getText().toString().length()==0){
+                    editPass.setError("Enter valid Password");
+                }
+            }
+            else if(!isNetworkConnected()){
                 new AlertDialog.Builder(this)
                         .setTitle("No Internet Connection")
                         .setMessage("It looks like your internet connection is off. Please turn it " +
@@ -132,6 +150,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             try {
                 status = post(Constants.mainUrl+Constants.validate,params[0],params[1],params[2]);
             } catch (IOException e) {
+                mProgressDialog.dismiss();
                 e.printStackTrace();
             }
             return status;

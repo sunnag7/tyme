@@ -4,9 +4,12 @@ import android.app.DatePickerDialog;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.app.TimePickerDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -18,16 +21,14 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.AlertDialog;
-//import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.view.animation.TranslateAnimation;
+
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -38,7 +39,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.TimePicker;
 
 import com.san.tyme.Database.Database;
 import com.san.tyme.R;
@@ -58,6 +59,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -77,25 +79,23 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class SimplePageFragment extends Fragment {
+public class SimplePageFragment extends Fragment  implements TimePickerDialog.OnTimeSetListener{
 
-    private static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("MMMM dd, yyyy");
+   // private static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("MMMM dd, yyyy");
     private static final String DATE_PICKER_DATE_KEY = "date_picker_date_key";
     private static final String DATE_PICKER_POSITION_KEY = "date_picker_position_key";
     public static final String PREFS_NAME = "TymePref";
 
     private TextView tvHours,tvPosition;
-    private int position;
+    //private int position;
     private long date;
-    Context context;
+    private Context context;
     RecyclerView recyclerView;
     LinearLayout linearLayout;
     RecyclerViewAdapter recyclerViewAdapter;
     RecyclerView.LayoutManager recylerViewLayoutManager;
-
+    TymeActivity tymeData;
     SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-    private NotificationManager myNotificationManager;
-    private int notificationIdOne = 111;
     String selectedItemText = "",dateVal = "",email = "",subdomain = "";
     ExpandableListView expListView;
     Map<String, List<String>> laptopCollection;
@@ -103,7 +103,7 @@ public class SimplePageFragment extends Fragment {
     Calendar myCalendar = Calendar.getInstance();
     DatePickerDialog.OnDateSetListener dateListener ;
     HashMap<String,String> hm ;
-
+    Database db ;
     public static SimplePageFragment newInstance(int position, long date) {
         Bundle bundle = new Bundle();
         bundle.putInt(DATE_PICKER_POSITION_KEY, position);
@@ -120,7 +120,7 @@ public class SimplePageFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         context = getActivity();
-        position = getArguments().getInt(DATE_PICKER_POSITION_KEY, -1);
+        //position = getArguments().getInt(DATE_PICKER_POSITION_KEY, -1);
         date = getArguments().getLong(DATE_PICKER_DATE_KEY, -1);
 
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, context.MODE_PRIVATE);
@@ -132,17 +132,25 @@ public class SimplePageFragment extends Fragment {
             imgPath = prefs.getString("image", "");*/
         }
 
-        ((TymeActivity)getActivity()).setFragmentRefreshListener(new TymeActivity.FragmentRefreshListener() {
+        /* ((TymeActivity)getActivity()).setFragmentRefreshListener(new TymeActivity.FragmentRefreshListener() {
             @Override
             public void onRefresh() {
                 refreshRecycler();
             }
         });
+        */
+        tymeData = new TymeActivity();
+        tvHours = tymeData.meditText;
+        //showTimerChanges(sdf.format(date));
+        // IntentFilter mTime = new IntentFilter(Intent.ACTION_TIME_TICK);
+        //register broadcast receiver
+        //context.registerReceiver(mtimeInfoReceiver, mTime);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+
 
         return inflater.inflate(R.layout.fragment_page_simple, container, false);
     }
@@ -153,11 +161,12 @@ public class SimplePageFragment extends Fragment {
 
         linearLayout = (LinearLayout) view.findViewById(R.id.linLayout);
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerview1);
-        tvHours = (TextView) view.findViewById(R.id.textView18);
+        //tvHours = (TextView) view.findViewById(R.id.textView18);
+
         recylerViewLayoutManager = new LinearLayoutManager(context);
         recyclerView.setLayoutManager(recylerViewLayoutManager);
 
-        Database db = new Database(getActivity());
+        db = new Database(getActivity());
         String currentDateandTime = sdf.format(date);
         TymeApplication.reportDate = currentDateandTime;
 
@@ -172,51 +181,24 @@ public class SimplePageFragment extends Fragment {
         recyclerView.setAdapter(recyclerViewAdapter);
         recyclerViewAdapter.notifyDataSetChanged();
 
-        Animation animation = AnimationUtils.loadAnimation(context, R.anim.fab1_show);
-        Animation animation1 = AnimationUtils.loadAnimation(context, R.anim.slide_in_left);
+        //Animation animation = AnimationUtils.loadAnimation(context, R.anim.fab1_show);
+        //Animation animation1 = AnimationUtils.loadAnimation(context, R.anim.slide_in_left);
 
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fabBtn);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 spinnerExpanded();
-                Toast.makeText(getActivity(), SIMPLE_DATE_FORMAT.format(date)+" "
+                /*Toast.makeText(getActivity(), SIMPLE_DATE_FORMAT.format(date)+" "
                         +TymeApplication.reportDate, Toast.LENGTH_LONG)
-                        .show();
+                        .show();*/
             }
         });
 
         //fab.startAnimation(animation);
+        //tvHours. startAnimation(animation1);
 
-        String tot = db.getdaysTotal(currentDateandTime);
-        if(!tot.equals("")) {
-            String min = "";
-            System.out.println("***tot "+tot);
-            int m = Math.round(Float.valueOf(tot).floatValue()) / 60;
-            int h = m / 60;
-
-            if (m > 60) {
-                Calendar calendar = Calendar.getInstance();
-                calendar.set(Calendar.HOUR_OF_DAY, h);
-                calendar.set(Calendar.MINUTE, m);
-                /*calendar.set(Calendar.MILLISECOND, 0);
-                calendar.set(Calendar.SECOND, 37540);*/
-                min = new SimpleDateFormat("mm").format(calendar.getTime());
-            } else {
-                min = "" + m;
-            }
-
-            tvHours.setText("Total Hours\n" + h + ":" + min);
-            //((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle("Total- " + h + ":" + min);
-        }
-        else{
-            tvHours.setText("Total Hours\n00 : 00");
-           // ((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle("Total- 00:00");
-        }
-
-        tvHours. startAnimation(animation1);
-
-        recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+        /*recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
@@ -261,9 +243,40 @@ public class SimplePageFragment extends Fragment {
                 super.onScrolled(recyclerView, dx, dy);
 
             }
-        });
+        });*/
     }
 
+    private void showTimerChanges(String currentDateandTime) {
+
+        db = new Database(getActivity());
+        String tot = db.getdaysTotal(currentDateandTime);
+        if(!tot.equals("")&& tot!=null) {
+            String min = "";
+            System.out.println("***tot "+tot);
+            int m = Math.round(Float.valueOf(tot).floatValue()) / 60;
+            int h = m / 60;
+
+            if (m > 60) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(Calendar.HOUR_OF_DAY, h);
+                calendar.set(Calendar.MINUTE, m);
+                /*calendar.set(Calendar.MILLISECOND, 0);
+                calendar.set(Calendar.SECOND, 37540);*/
+                min = new SimpleDateFormat("mm").format(calendar.getTime());
+            } else {
+                min = "" + m;
+            }
+
+            tvHours.setText("Total Hours\n" + h + ":" + min);
+            //((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle("Total- " + h + ":" + min);
+        }
+        else{
+            tvHours.setText("Total Hours\n00 : 00");
+            // ((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle("Total- 00:00");
+        }
+    }
+
+    TextView editTotalTime,clientname;
     public void spinnerExpanded(){
 
         final AlertDialog.Builder dialogBuilderMain = new AlertDialog.Builder(context);
@@ -273,12 +286,13 @@ public class SimplePageFragment extends Fragment {
 
         final AlertDialog alertDialogMain = dialogBuilderMain.create();
 
-        Spinner spinner = (Spinner) dialogViewMain.findViewById(R.id.spinner);
+        final Spinner spinner = (Spinner) dialogViewMain.findViewById(R.id.spinner);
         // Spinner click listener
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 selectedItemText = ""+ parent.getItemAtPosition(position);
+                clientname.setVisibility(View.VISIBLE);
             }
 
             @Override
@@ -286,29 +300,52 @@ public class SimplePageFragment extends Fragment {
                 selectedItemText = ""+ parent.getItemAtPosition(0);
             }
         });
-        // Spinner Drop down elements
 
-        Database adb = new Database(context);
-        ArrayList<Task> mTaskArray = adb.getTasks();
+        db = new Database(context);
+        ArrayList<Task> mTaskArray = db.getTasks();
 
         List<String> strArrTask = new ArrayList<String>();
 
         for (int i = 0; i<mTaskArray.size(); i++){
             strArrTask.add(""+mTaskArray.get(i).getTask_name());
         }
-
         // Creating adapter for spinner
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(context,
-                android.R.layout.simple_spinner_item, strArrTask);
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getActivity(), R.layout.spinner_text) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+
+                View v = super.getView(position, convertView, parent);
+                if (position == getCount()) {
+                    ((TextView)v.findViewById(R.id.textView23)).setText("");
+                    ((TextView)v.findViewById(R.id.textView23)).setHint(getItem(getCount())); //"Hint to be displayed"
+                }
+
+                return v;
+            }
+
+            @Override
+            public int getCount() {
+                return super.getCount()-1; // you dont display last item. It is used as hint.
+            }
+        };
+
+        /* ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(context,
+                 R.layout.spinner_text, strArrTask);*/
 
         // Drop down layout style - list view with radio button
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+       // dataAdapter.setDropDownViewResource(R.layout.spinner_text);
+        for (int i =0;i<strArrTask.size();i++ ){
+            dataAdapter.add(""+strArrTask.get(i));
+        }
+        dataAdapter.add("Select task");
 
         // attaching data adapter to spinner
         spinner.setAdapter(dataAdapter);
+        spinner.setSelection(dataAdapter.getCount());
 
-        final TextView clientname = (TextView) dialogViewMain.findViewById(R.id.textView5);
-
+        clientname = (TextView) dialogViewMain.findViewById(R.id.textView5);
         final TextView projEdit = (TextView) dialogViewMain.findViewById(R.id.editText3);
         projEdit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -336,8 +373,6 @@ public class SimplePageFragment extends Fragment {
                         final String selectedGrp = (String) expListAdapter.getGroup(
                                 groupPosition);
 
-                        Toast.makeText(context, selected+" "+selectedGrp, Toast.LENGTH_SHORT)
-                                .show();
                         projEdit.setText(""+selected);
                         clientname.setText(""+selectedGrp);
 
@@ -350,12 +385,13 @@ public class SimplePageFragment extends Fragment {
         });
 
         final EditText editDesc = (EditText) dialogViewMain.findViewById(R.id.editText5);
-        final EditText editTotalTime = (EditText) dialogViewMain.findViewById(R.id.editText7);
-        final EditText currentDate = (EditText) dialogViewMain.findViewById(R.id.editText6);
+        editTotalTime = (TextView) dialogViewMain.findViewById(R.id.editText7);
+        final TextView currentDate = (TextView) dialogViewMain.findViewById(R.id.editText6);
 
         //String currentDateandTime = sdf.format();
         SimpleDateFormat sdfTemp = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
         currentDate.setText(""+sdfTemp.format(date));
+        //currentDate.setEnabled(false);
 
         dateListener = new DatePickerDialog.OnDateSetListener() {
             @Override
@@ -388,57 +424,62 @@ public class SimplePageFragment extends Fragment {
                 //aMainTimerSub = new Timer();
                 String tot_time = editTotalTime.getText().toString();
                 double time1 = 0 ;
-                if (!tot_time.equals("")) {
-                    //double number = Double.parseDouble(tot_time);
-                    int decimal = Integer.parseInt(tot_time.split(":")[0]);
-                    int fractional = Integer.parseInt(tot_time.split(":")[1]);
+                if (clientname.getText().length()>0&& !spinner.getSelectedItem().toString().equals("Select task") ) {
 
-                    fractional = fractional * 60000;
-                    decimal = decimal * 3600000;
+                    if (!tot_time.equals("")) {
+                        //double number = Double.parseDouble(tot_time);
+                        int decimal = Integer.parseInt(tot_time.split(":")[0]);
+                        int fractional = Integer.parseInt(tot_time.split(":")[1]);
 
-                    time1 = (fractional + decimal) / 1000;
+                        fractional = fractional * 60000;
+                        decimal = decimal * 3600000;
+                        time1 = (fractional + decimal) / 1000;
+                        Log.d("total: ", "" + time1);
+                    }
 
-                    Log.d("total: ", "" + time1);
+                    String clName = clientname.getText().toString();
+                    String prName = projEdit.getText().toString();
+                    long time = System.currentTimeMillis();
+                    if (clName.length() > 0 && email.length() > 0) {
+                        String start_dt = "" + currentDate.getText().toString();
+                        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+                        Date date = null;
+                        try {
+                            date = (Date) formatter.parse(start_dt);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        //SimpleDateFormat newFormat = new SimpleDateFormat("MM-dd-yyyy");
+                        String finalString = sdf.format(date);
+
+                        hm = new HashMap<String, String>();
+
+                        hm.put("project", "" + prName);
+                        hm.put("email", "" + email);
+                        hm.put("client", "" + clName);
+                        hm.put("date", "" + finalString); //issue with date always paassing +1day or -1
+                        hm.put("desc", "" + editDesc.getText().toString());
+                        hm.put("task", "" + selectedItemText);
+                        hm.put("time", "" + (time / 1000.0f));
+                        hm.put("total", "" + time1);
+                        hm.put("subdomain", "" + subdomain);
+
+                        if (isNetworkConnected() && hm.size() > 0) {
+                            AsyncTaskSubmit runner = new AsyncTaskSubmit();
+                            runner.execute();
+                            alertDialogMain.dismiss();
+                        } else if (hm.size() == 0) {
+                            displayDialog("Unavailable", "Server Error", null);
+                        } else {
+                            displayDialog("Internet connection unavailable", "Connection Error", null);
+                        }
+                    }
                 }
-
-                String clName = clientname.getText().toString();
-                String prName = projEdit.getText().toString();
-                long time = System.currentTimeMillis();
-                if(clName.length()>0&& email.length()>0){
-
-                    String start_dt = ""+currentDate.getText().toString();
-                    DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-                    Date date = null;
-                    try {
-                        date = (Date) formatter.parse(start_dt);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                    //SimpleDateFormat newFormat = new SimpleDateFormat("MM-dd-yyyy");
-                    String finalString = sdf.format(date);
-
-                    hm = new HashMap<String, String>();
-
-                    hm.put("project",""+prName);
-                    hm.put("email",""+email);
-                    hm.put("client",""+clName);
-                    hm.put("date",""+finalString); //issue with date always paassing +1day or -1
-                    hm.put("desc",""+editDesc.getText().toString());
-                    hm.put("task",""+selectedItemText);
-                    hm.put("time",""+(time/1000.0f));
-                    hm.put("total",""+time1);
-                    hm.put("subdomain",""+subdomain);
-
-                    if (isNetworkConnected()&& hm.size()>0){
-                        AsyncTaskSubmit runner = new AsyncTaskSubmit();
-                        runner.execute();
-                        alertDialogMain.dismiss();
-                    } else if(hm.size()==0){
-                        displayDialog("Unavailable","Server Error",null);
-                    }
-                    else {
-                        displayDialog("Internet connection unavailable","Connection Error",null);
-                    }
+                else if (clientname.getText().length()==0) {
+                    projEdit.setError("Please Select project");
+                }
+                else{
+                    spinner.performClick();
                 }
             }
         });
@@ -447,6 +488,14 @@ public class SimplePageFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 alertDialogMain.dismiss();
+            }
+        });
+
+
+        editTotalTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                defaultTimePickerDialog();
             }
         });
 
@@ -470,6 +519,35 @@ public class SimplePageFragment extends Fragment {
         Database db = new Database(getActivity());
         groupList = db.getClientNames();
         Log.d("Group", ""+groupList.toString());
+    }
+
+    @Override
+    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+
+    }
+
+    private int mHour, mMinute;String hms = "";
+    public String defaultTimePickerDialog() {
+        Calendar c = Calendar.getInstance();
+        mHour = c.get(Calendar.HOUR_OF_DAY);
+        mMinute = c.get(Calendar.MINUTE);
+       /* android.app.TimePickerDialog dpd = new android.app.TimePickerDialog(getActivity(), this, now.get(Calendar.HOUR), now.get(Calendar.MINUTE), false);
+        dpd.show();*/
+        TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(),
+                new TimePickerDialog.OnTimeSetListener() {
+
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay,
+                                          int minute) {
+
+                        //txtTime.setText(hourOfDay + ":" + minute);
+                        hms = ""+hourOfDay + ":" + minute;
+                        editTotalTime.setText(hms);
+                    }
+                }, mHour, mMinute, true);
+        timePickerDialog.show();
+
+        return hms;
     }
 
     private class AsyncTaskSubmit extends AsyncTask<String, String, String> {
@@ -628,7 +706,7 @@ public class SimplePageFragment extends Fragment {
                         }
                         dialog.dismiss();
                     }
-                }) .setIcon(android.R.drawable.ic_dialog_alert).show();
+                }) .setIcon(R.drawable.ic_cloud_done_black_24dp).show();
     }
 
     private void createCollection() {
@@ -684,7 +762,7 @@ public class SimplePageFragment extends Fragment {
         NotificationCompat.Builder  mBuilder = new NotificationCompat.Builder(getActivity());
 
         mBuilder.setContentTitle("Tyme.co");
-        mBuilder.setContentText("New Task Added successfully");
+        mBuilder.setContentText("Task Added successfully");
         mBuilder.setTicker("Timer Started");
         mBuilder.setSmallIcon(R.drawable.tyme_);
 
@@ -713,13 +791,22 @@ public class SimplePageFragment extends Fragment {
         // start the activity when the user clicks the notification text
         mBuilder.setContentIntent(resultPendingIntent);
 
-        myNotificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager myNotificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
 
         // pass the Notification object to the system
+        int notificationIdOne = 111;
         myNotificationManager.notify(notificationIdOne, mBuilder.build());
     }
 
-  /*  @Override
+    @Override
+    public void onResume() {
+        super.onResume();
+        //showTimerChanges(TymeApplication.reportDate );
+    }
+
+
+
+    /*  @Override
     public void onResume() {
         super.onResume();
         Database db = new Database(getActivity());

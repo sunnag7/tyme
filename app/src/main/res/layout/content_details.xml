@@ -11,16 +11,12 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.san.tyme.activity.Details"
-    tools:showIn="@layout/activity_details">
+    tools:showIn="@layout/activity_details_edit">
 
     <android.support.v7.widget.CardView
         android:id="@+id/card_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="0dp"
-        app:cardElevation="3dp"
-        android:layout_marginTop="30dp"
-        app:cardUseCompatPadding="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true">
 
@@ -36,72 +32,105 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <TextView
-                    android:text="@string/project"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/textView16"
-                    android:layout_weight="1"
-                    android:padding="8dp"
-                    android:textSize="20sp"
-                    android:background="@drawable/brd_txt"
-                    android:gravity="center"
-                    android:textStyle="normal|bold" />
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/input_pr_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/textView16"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/project_name" />
+
+                </android.support.design.widget.TextInputLayout>
             </LinearLayout>
 
-            <TextView
-                android:text="@string/task"
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/input_layout_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            <EditText
+                android:hint="@string/task"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:id="@+id/textView14"
                 android:textSize="18sp"
                 android:layout_weight="1" />
-
-            <TextView
-                android:text="@string/client"
+            </android.support.design.widget.TextInputLayout>
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/input_client"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            <EditText
+                android:hint="@string/client"
                 android:layout_marginTop="20dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="18sp"
                 android:id="@+id/textView15" />
+            </android.support.design.widget.TextInputLayout>
 
-            <LinearLayout
-                android:orientation="horizontal"
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/input_date"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="20dp">
-
-                <TextView
-                    android:text="@string/date"
-                    android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <EditText
+                    android:hint="@string/date"
+                    android:layout_marginTop="20dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/textView17"
-                    android:textSize="18sp"
-                    android:gravity="center|left"
-                    android:layout_weight="1" />
+                    android:textSize="18sp" />
+            </android.support.design.widget.TextInputLayout>
 
-                <TextView
-                    android:text="Total:"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/textView21"
-                    android:visibility="invisible"
-                    android:textSize="18sp"
-                    android:gravity="center|left"
-                    android:layout_weight="1"
-                    android:drawableLeft="@drawable/timer_a"
-                    />
-            </LinearLayout>
-
-            <TextView
-                android:text="Description"
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/input_desc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            <EditText
+                android:hint="@string/description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:layout_marginBottom="15dp"
                 android:textSize="18sp"
                 android:id="@+id/textView11" />
+
+            </android.support.design.widget.TextInputLayout>
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/input_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            <EditText
+                android:hint="Total"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView21"
+                android:visibility="visible"
+                android:textSize="18sp"
+                android:layout_weight="1"
+                android:drawablePadding="4dp"
+                android:layout_marginTop="20dp" />
+            </android.support.design.widget.TextInputLayout>
+
+            <LinearLayout
+                android:layout_marginTop="5dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+
+
+               <!-- <Button
+                    android:text="Button"
+                    android:layout_weight="0.5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button5" />-->
+            </LinearLayout>
+
+
         </LinearLayout>
     </android.support.v7.widget.CardView>
 
@@ -114,5 +143,11 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="13dp" />
-
+    <Button
+        android:text="UPDATE"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.5"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/button6" />
 </RelativeLayout>

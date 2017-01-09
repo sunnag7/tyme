@@ -215,8 +215,7 @@ public class Database extends SQLiteOpenHelper {
         return row_id;
     }
 
-    public long createResultSingle(Timer mTimer)
-    {
+    public long createResultSingle(Timer mTimer) {
         long row_id;
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -240,14 +239,12 @@ public class Database extends SQLiteOpenHelper {
         return row_id;
     }
 
-    public long createTask(ArrayList<Task> mTaskArr)
-    {
+    public long createTask(ArrayList<Task> mTaskArr) {
         long row_id = 0;
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
         for(int i = 0;i<mTaskArr.size() ;i++) {
-
             values.put(TASK_ID, mTaskArr.get(i).getTask_id());
             values.put(TASK_NAME, mTaskArr.get(i).getTask_name());
             values.put(TASK_ISBILLABLE, mTaskArr.get(i).getIsBillable());
@@ -358,7 +355,6 @@ public class Database extends SQLiteOpenHelper {
         return ""+tot;
     }
 
-
     public int getResultCount() {
         String countQuery = "SELECT * FROM " + TABLE_RESULTS;
         SQLiteDatabase db = this.getReadableDatabase();
@@ -381,7 +377,6 @@ public class Database extends SQLiteOpenHelper {
     public ArrayList<Timer> getResults(String date) {
 
         ArrayList<Timer> ar = new ArrayList<Timer>();
-
         String selectQuery = "SELECT * FROM " + TABLE_RESULTS+" where "+RESULT_DATE+" = '"+date+"'";
         //Log.d("QUERY",""+selectQuery);
         SQLiteDatabase db = this.getReadableDatabase();

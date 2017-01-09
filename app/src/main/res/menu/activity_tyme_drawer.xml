@@ -4,7 +4,7 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_camera"
-            android:icon="@drawable/ic_timer_black_24dp"
+            android:icon="@drawable/ic_query_builder_black_24dp"
             android:title="Time" />
        <!-- <item
             android:id="@+id/nav_gallery"
@@ -16,7 +16,7 @@
             android:title="Slideshow" />-->
         <item
             android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_settings_power_black_24dp"
+            android:icon="@drawable/ic_power_settings_new_black_24dp"
             android:title="Logout" />
     </group>
 

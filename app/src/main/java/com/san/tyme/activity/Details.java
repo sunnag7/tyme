@@ -83,14 +83,11 @@ public class Details extends AppCompatActivity {
                 textTot.setText(" " + h + ":" + min);
             }
         }
-        else if(kType== 2){
-            textMsg.setText("Task timer started.");
-        }
-        else if(kType== 3){
+        else if(kType== 2 ||kType== 3 ){
             textMsg.setText("Task timer started.");
         }
         else if(kType== 4){
-
+            textMsg.setText("");
         }
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -134,7 +131,7 @@ public class Details extends AppCompatActivity {
         //SimpleDateFormat newFormat = new SimpleDateFormat("MM-dd-yyyy");
         String finalString = formatter.format(date);
 
-        textDate.setText(" "+finalString);
+        textDate.setText("Date: "+finalString);
         textTask.setText("Task: "+aTime.getTask());
     }
 

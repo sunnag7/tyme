@@ -30,11 +30,10 @@
         android:id="@+id/relWelcome"
         android:layout_marginTop="40dp"
         android:layout_centerHorizontal="true"
-        android:layout_alignParentTop="true"
-        >
+        android:layout_alignParentTop="true">
 
         <TextView
-            android:text="Welcome to"
+            android:text="@string/welcome_to"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
@@ -52,7 +51,6 @@
             android:id="@+id/imageView2" />
     </RelativeLayout>
 
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -63,7 +61,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true">
     <Button
-        android:text="Sign in"
+        android:text="@string/sign_in"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
@@ -75,7 +73,7 @@
         android:layout_alignEnd="@+id/editText2" />
 
     <TextView
-        android:text="I forgot my password"
+        android:text="@string/i_forgot_my_password"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/button"
@@ -89,7 +87,7 @@
         android:layout_height="wrap_content"
         android:inputType="textEmailAddress"
         android:ems="10"
-        android:hint="Email id"
+        android:hint="@string/email_id"
         android:layout_marginTop="10dp"
         android:id="@+id/editText"
         android:gravity="center"
@@ -102,7 +100,7 @@
         android:inputType="textPassword"
         android:ems="10"
         android:gravity="center"
-        android:hint="Password"
+        android:hint="@string/password"
         android:layout_marginTop="20dp"
         android:id="@+id/editText2"
         android:layout_below="@+id/editText"

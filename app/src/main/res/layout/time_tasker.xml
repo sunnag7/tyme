@@ -2,22 +2,18 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:layout_margin="2dp"
+    android:layout_marginBottom="1dp"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" >
+    android:layout_height="100dp" >
     <FrameLayout
         android:id="@+id/item_layout_container"
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
     <android.support.v7.widget.CardView
         android:id="@+id/card_view"
-        xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        card_view:cardCornerRadius="4dp"
-        card_view:cardElevation="3dp"
-        card_view:cardUseCompatPadding="true">
+        android:layout_height="match_parent">
 
     <LinearLayout
         android:orientation="horizontal"
@@ -25,7 +21,7 @@
         android:padding="6dp"
         android:layout_marginLeft="5dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:orientation="vertical"
@@ -33,32 +29,41 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:text="TextView"
+                android:text=""
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:textSize="18sp"
+                android:textSize="16sp"
                 android:id="@+id/textView9" />
 
             <TextView
-                android:text="TextView"
-                android:layout_width="match_parent"
+                android:text=""
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:textColor="#AAAAAA"
+                android:ellipsize="end"
+                android:lines="1"
                 android:id="@+id/textView22" />
 
             <TextView
-                android:text="TextView"
+                android:text=""
                 android:gravity="bottom"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:lines="1"
                 android:id="@+id/textView10" />
 
         </LinearLayout>
 
         <TextView
-            android:text="TextView"
+            android:text=""
             android:layout_width="80dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="3dp"
+            android:lines="1"
+            android:ellipsize="end"
             android:id="@+id/textView12" />
 
         <ImageView
@@ -77,12 +82,30 @@
             android:padding="3dp"
             android:gravity="center"/>
 
-        <ImageView
-            android:layout_width="40dp"
-            android:layout_height="wrap_content"
-            app:srcCompat="@drawable/ic_delete_forever_black_24dp"
-            android:id="@+id/imageView3"
-         android:padding="4dp"/>
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="10dp"
+            android:layout_gravity="right">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:srcCompat="@drawable/ic_mode_edit_black_24dp"
+                android:id="@+id/imageView5"
+                android:layout_marginBottom="2dp"
+                android:layout_weight="0.5"/>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="2dp"
+                app:srcCompat="@drawable/ic_delete_black_24dp"
+                android:id="@+id/imageView3"
+                android:layout_weight="0.5"
+              />
+        </LinearLayout>
 
     </LinearLayout>
 </android.support.v7.widget.CardView>

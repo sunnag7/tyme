@@ -18,4 +18,10 @@
     <string name="task">Task</string>
     <string name="project">Project</string>
     <string name="pl">00.00</string>
+    <string name="_00_00">00:00</string>
+    <string name="sign_in">Sign in</string>
+    <string name="email_id">Email id</string>
+    <string name="password">Password</string>
+    <string name="i_forgot_my_password">I forgot my password</string>
+    <string name="welcome_to">Welcome to</string>
 </resources>

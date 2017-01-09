@@ -72,7 +72,7 @@ public class DomainActivity extends AppCompatActivity implements View.OnClickLis
 
         if(v.getId() == R.id.button4){
             //validate whether domain exists
-            if (isNetworkConnected()) {
+            if (isNetworkConnected() && domainName.getText().toString().length()>0) {
                 mProgressDialog = new ProgressDialog(this);
                 mProgressDialog.setMessage("Please wait...");
                 mProgressDialog.setCancelable(false);
@@ -83,7 +83,7 @@ public class DomainActivity extends AppCompatActivity implements View.OnClickLis
                 //String sleepTime = time.getText().toString();
                 runner.execute();
 
-            } else {
+            } else if(! isNetworkConnected() ) {
                 new AlertDialog.Builder(this)
                         .setTitle("No Internet Connection")
                         .setMessage("It looks like your internet connection is off. Please turn it " +
@@ -92,6 +92,9 @@ public class DomainActivity extends AppCompatActivity implements View.OnClickLis
                             public void onClick(DialogInterface dialog, int which) {
                             }
                         }).setCancelable(false).setIcon(R.drawable.tyme_).show();
+            }
+            else if(domainName.getText().toString().length()==0){
+                domainName.setError("Domain name cannot be empty");
             }
         }
     }
