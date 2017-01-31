@@ -5,11 +5,9 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -118,11 +116,9 @@ public class SimplePageFragment extends Fragment  implements TimePickerDialog.On
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         context = getActivity();
         //position = getArguments().getInt(DATE_PICKER_POSITION_KEY, -1);
         date = getArguments().getLong(DATE_PICKER_DATE_KEY, -1);
-
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, context.MODE_PRIVATE);
         String restoredText = prefs.getString("id", null);
         if (restoredText != null) {
@@ -150,8 +146,6 @@ public class SimplePageFragment extends Fragment  implements TimePickerDialog.On
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-
-
         return inflater.inflate(R.layout.fragment_page_simple, container, false);
     }
 
@@ -176,7 +170,7 @@ public class SimplePageFragment extends Fragment  implements TimePickerDialog.On
 
         ArrayList<Timer> mTimerArr = db.getResults(""+currentDateandTime);
         /**have to pass the data from server to the recycler item view */
-        recyclerViewAdapter = new RecyclerViewAdapter(context, currentDateandTime, mTimerArr);
+        recyclerViewAdapter = new RecyclerViewAdapter(context, currentDateandTime, mTimerArr, tvHours);
 
         recyclerView.setAdapter(recyclerViewAdapter);
         recyclerViewAdapter.notifyDataSetChanged();
@@ -189,9 +183,6 @@ public class SimplePageFragment extends Fragment  implements TimePickerDialog.On
             @Override
             public void onClick(View view) {
                 spinnerExpanded();
-                /*Toast.makeText(getActivity(), SIMPLE_DATE_FORMAT.format(date)+" "
-                        +TymeApplication.reportDate, Toast.LENGTH_LONG)
-                        .show();*/
             }
         });
 
@@ -250,10 +241,10 @@ public class SimplePageFragment extends Fragment  implements TimePickerDialog.On
 
         db = new Database(getActivity());
         String tot = db.getdaysTotal(currentDateandTime);
-        if(!tot.equals("")&& tot!=null) {
+        if(!tot.equals("")) {
             String min = "";
             System.out.println("***tot "+tot);
-            int m = Math.round(Float.valueOf(tot).floatValue()) / 60;
+            int m = Math.round(Float.valueOf(tot)) / 60;
             int h = m / 60;
 
             if (m > 60) {
@@ -276,25 +267,23 @@ public class SimplePageFragment extends Fragment  implements TimePickerDialog.On
         }
     }
 
+    SimpleDateFormat formatter = new SimpleDateFormat("E, MMM dd yyyy");
     TextView editTotalTime,clientname;
     public void spinnerExpanded(){
-
         final AlertDialog.Builder dialogBuilderMain = new AlertDialog.Builder(context);
         LayoutInflater inflater = getActivity().getLayoutInflater();
         final View dialogViewMain = inflater.inflate(R.layout.custom_dia, null);
         dialogBuilderMain.setView(dialogViewMain);
 
         final AlertDialog alertDialogMain = dialogBuilderMain.create();
-
+        alertDialogMain.setTitle("Please fill details below:");
         final Spinner spinner = (Spinner) dialogViewMain.findViewById(R.id.spinner);
-        // Spinner click listener
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 selectedItemText = ""+ parent.getItemAtPosition(position);
                 clientname.setVisibility(View.VISIBLE);
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 selectedItemText = ""+ parent.getItemAtPosition(0);
@@ -303,9 +292,7 @@ public class SimplePageFragment extends Fragment  implements TimePickerDialog.On
 
         db = new Database(context);
         ArrayList<Task> mTaskArray = db.getTasks();
-
         List<String> strArrTask = new ArrayList<String>();
-
         for (int i = 0; i<mTaskArray.size(); i++){
             strArrTask.add(""+mTaskArray.get(i).getTask_name());
         }
@@ -320,7 +307,6 @@ public class SimplePageFragment extends Fragment  implements TimePickerDialog.On
                     ((TextView)v.findViewById(R.id.textView23)).setText("");
                     ((TextView)v.findViewById(R.id.textView23)).setHint(getItem(getCount())); //"Hint to be displayed"
                 }
-
                 return v;
             }
 
@@ -332,10 +318,9 @@ public class SimplePageFragment extends Fragment  implements TimePickerDialog.On
 
         /* ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(context,
                  R.layout.spinner_text, strArrTask);*/
-
         // Drop down layout style - list view with radio button
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-       // dataAdapter.setDropDownViewResource(R.layout.spinner_text);
+        dataAdapter.setDropDownViewResource( R.layout.spinner_text);
+        // dataAdapter.setDropDownViewResource(R.layout.spinner_text);
         for (int i =0;i<strArrTask.size();i++ ){
             dataAdapter.add(""+strArrTask.get(i));
         }
@@ -350,7 +335,6 @@ public class SimplePageFragment extends Fragment  implements TimePickerDialog.On
         projEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
                 LayoutInflater inflater = getActivity().getLayoutInflater();
                 final View dialogView = inflater.inflate(R.layout.custom_dia_, null);
@@ -360,22 +344,17 @@ public class SimplePageFragment extends Fragment  implements TimePickerDialog.On
                 final ExpandableListAdapter expListAdapter = new ExpandableListAdapter(
                         getActivity(), groupList, laptopCollection);
                 expListView.setAdapter(expListAdapter);
-
                 //setGroupIndicatorToRight();
-
                 final AlertDialog alertDialog = dialogBuilder.create();
                 expListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
-
                     public boolean onChildClick(ExpandableListView parent, View v,
                                                 int groupPosition, int childPosition, long id) {
                         final String selected = (String) expListAdapter.getChild(
                                 groupPosition, childPosition);
                         final String selectedGrp = (String) expListAdapter.getGroup(
                                 groupPosition);
-
                         projEdit.setText(""+selected);
                         clientname.setText(""+selectedGrp);
-
                         alertDialog.cancel();
                         return true;
                     }
@@ -390,7 +369,7 @@ public class SimplePageFragment extends Fragment  implements TimePickerDialog.On
 
         //String currentDateandTime = sdf.format();
         SimpleDateFormat sdfTemp = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
-        currentDate.setText(""+sdfTemp.format(date));
+        currentDate.setText(""+ formatter.format(date));
         //currentDate.setEnabled(false);
 
         dateListener = new DatePickerDialog.OnDateSetListener() {
@@ -450,14 +429,14 @@ public class SimplePageFragment extends Fragment  implements TimePickerDialog.On
                             e.printStackTrace();
                         }
                         //SimpleDateFormat newFormat = new SimpleDateFormat("MM-dd-yyyy");
-                        String finalString = sdf.format(date);
+                        // String finalString = sdf.format(date);
 
                         hm = new HashMap<String, String>();
 
                         hm.put("project", "" + prName);
                         hm.put("email", "" + email);
                         hm.put("client", "" + clName);
-                        hm.put("date", "" + finalString); //issue with date always paassing +1day or -1
+                        hm.put("date", "" + sdf.format(myCalendar.getTime()));
                         hm.put("desc", "" + editDesc.getText().toString());
                         hm.put("task", "" + selectedItemText);
                         hm.put("time", "" + (time / 1000.0f));
@@ -476,7 +455,15 @@ public class SimplePageFragment extends Fragment  implements TimePickerDialog.On
                     }
                 }
                 else if (clientname.getText().length()==0) {
-                    projEdit.setError("Please Select project");
+                 //   projEdit.setError("Please Select project");
+                    new AlertDialog.Builder(context)
+                            .setTitle("Error!").setCancelable(true)
+                            .setMessage("Select Project name")
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            }) .setIcon(R.drawable.ic_error_outline_black_24dp).show();
                 }
                 else{
                     spinner.performClick();
@@ -490,7 +477,6 @@ public class SimplePageFragment extends Fragment  implements TimePickerDialog.On
                 alertDialogMain.dismiss();
             }
         });
-
 
         editTotalTime.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -510,8 +496,9 @@ public class SimplePageFragment extends Fragment  implements TimePickerDialog.On
     }
 
     private String updateLabel() {
-        SimpleDateFormat sdfd = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
-        return sdfd.format(myCalendar.getTime());
+       // SimpleDateFormat sdfd = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
+
+        return formatter.format(myCalendar.getTime());
     }
 
     private void createGroupList() {
@@ -526,11 +513,11 @@ public class SimplePageFragment extends Fragment  implements TimePickerDialog.On
 
     }
 
-    private int mHour, mMinute;String hms = "";
+    String hms = "", hr = "", mi = "";
     public String defaultTimePickerDialog() {
         Calendar c = Calendar.getInstance();
-        mHour = c.get(Calendar.HOUR_OF_DAY);
-        mMinute = c.get(Calendar.MINUTE);
+        int mHour = c.get(Calendar.HOUR_OF_DAY);
+        int mMinute = c.get(Calendar.MINUTE);
        /* android.app.TimePickerDialog dpd = new android.app.TimePickerDialog(getActivity(), this, now.get(Calendar.HOUR), now.get(Calendar.MINUTE), false);
         dpd.show();*/
         TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(),
@@ -539,9 +526,18 @@ public class SimplePageFragment extends Fragment  implements TimePickerDialog.On
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay,
                                           int minute) {
-
                         //txtTime.setText(hourOfDay + ":" + minute);
-                        hms = ""+hourOfDay + ":" + minute;
+                        if (hourOfDay<10)
+                            hr = "0"+hourOfDay;
+                        else
+                            hr = ""+hourOfDay;
+
+                        if (minute<10)
+                            mi = "0"+ minute;
+                        else
+                            mi = ""+minute;
+
+                        hms = ""+hr + ":" + mi;
                         editTotalTime.setText(hms);
                     }
                 }, mHour, mMinute, true);
@@ -696,10 +692,10 @@ public class SimplePageFragment extends Fragment  implements TimePickerDialog.On
                 .setMessage(""+message)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        if(title.equals("Success"))
-                        {
+                        if(title.equals("Success")) {
                             Intent intent = new Intent(getActivity(), Details.class);
                             intent.putExtra("id",aTimer.getId());
+                            intent.putExtra("type", 0);
                             startActivity(intent);
                             getActivity().finish();
                             displayNotificationOne(aTimer.getId());
@@ -710,12 +706,11 @@ public class SimplePageFragment extends Fragment  implements TimePickerDialog.On
     }
 
     private void createCollection() {
-
         ArrayList<Client> mClArr = new ArrayList<Client>();
         System.out.println("GrpSize ##**"+groupList.get(0));
         for(int i = 0;i<groupList.size();i++){
             Client mClient = new Client();
-            mClient.setClient(groupList.get(i).toString());
+            mClient.setClient(groupList.get(i));
             Database db = new Database(context);
             mClient.setmClProjArr(db.getClients(groupList.get(i)));
 
@@ -749,7 +744,7 @@ public class SimplePageFragment extends Fragment  implements TimePickerDialog.On
         //TymeApplication.reportDate = currentDateandTime;
         ArrayList<Timer> mTimerArr = db.getResults(""+TymeApplication.reportDate);
         /**have to pass the data from server to the recycler item view */
-        recyclerViewAdapter = new RecyclerViewAdapter(context, currentDateandTime, mTimerArr);
+        recyclerViewAdapter = new RecyclerViewAdapter(context, currentDateandTime, mTimerArr,tvHours);
         recyclerView.setAdapter(recyclerViewAdapter);
         recyclerView.invalidate();
         recyclerViewAdapter.notifyDataSetChanged();
@@ -760,38 +755,29 @@ public class SimplePageFragment extends Fragment  implements TimePickerDialog.On
 
         // Invoking the default notification service
         NotificationCompat.Builder  mBuilder = new NotificationCompat.Builder(getActivity());
-
         mBuilder.setContentTitle("Tyme.co");
         mBuilder.setContentText("Task Added successfully");
         mBuilder.setTicker("Timer Started");
         mBuilder.setSmallIcon(R.drawable.tyme_);
-
         // Increase notification number every time a new notification arrives
         mBuilder.setNumber(++numMessagesOne);
-
         // Creates an explicit intent for an Activity in your app
         Intent resultIntent = new Intent(getActivity(), Details.class);
         //resultIntent.putExtra("notificationId", notificationIdOne);
         resultIntent.putExtra("id", id);
         resultIntent.putExtra("type", 0);
-
         //This ensures that navigating backward from the Activity leads out of the app to Home page
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(getActivity());
-
         // Adds the back stack for the Intent
         stackBuilder.addParentStack(NotificationOne.class);
-
         // Adds the Intent that starts the Activity to the top of the stack
         stackBuilder.addNextIntent(resultIntent);
         PendingIntent resultPendingIntent =
-                stackBuilder.getPendingIntent(
-                        0,
-                        PendingIntent.FLAG_ONE_SHOT //can only be used once
-                );
+                stackBuilder.getPendingIntent(0,PendingIntent.FLAG_ONE_SHOT);//can only be used once
         // start the activity when the user clicks the notification text
         mBuilder.setContentIntent(resultPendingIntent);
-
-        NotificationManager myNotificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager myNotificationManager = (NotificationManager)
+                getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
 
         // pass the Notification object to the system
         int notificationIdOne = 111;
@@ -803,8 +789,6 @@ public class SimplePageFragment extends Fragment  implements TimePickerDialog.On
         super.onResume();
         //showTimerChanges(TymeApplication.reportDate );
     }
-
-
 
     /*  @Override
     public void onResume() {

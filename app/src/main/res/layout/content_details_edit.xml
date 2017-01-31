@@ -38,7 +38,7 @@
 
                 <TextView
                     android:text="@string/project"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/textView16"
                     android:layout_weight="1"
@@ -84,27 +84,24 @@
             </LinearLayout>
 
             <TextView
-                android:text="Description"
+                android:text="@string/description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:textSize="18sp"
                 android:id="@+id/textView11" />
 
-
             <TextView
-                android:text="Total:"
-                android:layout_width="wrap_content"
+                android:text="@string/total"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/textView21"
                 android:visibility="visible"
                 android:textSize="18sp"
                 android:gravity="center|left"
                 android:layout_weight="1"
-                android:drawablePadding="4dp"
-                android:layout_marginBottom="15dp"
-                android:layout_marginTop="20dp"
-                android:drawableLeft="@drawable/ic_alarm_on_black_24dp" />
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="20dp" />
         </LinearLayout>
     </android.support.v7.widget.CardView>
 

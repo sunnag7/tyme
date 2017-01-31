@@ -25,6 +25,7 @@ import java.util.TimeZone;
 public class Details extends AppCompatActivity {
     TextView textPro, textDesc, textTask, textDate, textClient, textMsg, textTot;
     Timer aTime;
+    int id =0, kType = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,8 +46,6 @@ public class Details extends AppCompatActivity {
         });
 
         Bundle extras = getIntent().getExtras();
-        int id =0, kType = 0;
-
         if (extras != null) {
             id = extras.getInt("id",0);
             kType = extras.getInt("type",0);//
@@ -54,41 +53,6 @@ public class Details extends AppCompatActivity {
 
         initViews();
         getDataVal(id);
-
-        if(kType==1){
-            textMsg.setText("Task timer stopped.");
-            SimpleDateFormat df = new SimpleDateFormat("hh:mm"); // HH for 0-23
-            df.setTimeZone(TimeZone.getTimeZone("GMT"));
-            //String time = df.format(d);
-            float diffInMillies = Float.valueOf(aTime.getTotal()).floatValue();
-            if (diffInMillies!=0) {
-                int m = Math.round(diffInMillies) / 60;
-                int h = m / 60;
-
-                String min = "";
-                if (m > 59) {
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.set(Calendar.HOUR_OF_DAY, h);
-                    calendar.set(Calendar.MINUTE, m);
-                    /*calendar.set(Calendar.MILLISECOND, 0);
-                    calendar.set(Calendar.SECOND, 37540);*/
-                    min = new SimpleDateFormat("mm").format(calendar.getTime());
-                } else if (m < 10) {
-                    min = "0" + m;
-                } else {
-                    min = "" + m;
-                }
-
-                textTot.setVisibility(View.VISIBLE);
-                textTot.setText(" " + h + ":" + min);
-            }
-        }
-        else if(kType== 2 ||kType== 3 ){
-            textMsg.setText("Task timer started.");
-        }
-        else if(kType== 4){
-            textMsg.setText("");
-        }
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -117,7 +81,7 @@ public class Details extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        textDesc.setText("Description:\n"+text);
+        textDesc.setText("Description: "+text);
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         String start_dt = ""+aTime.getDate().toString();
@@ -133,6 +97,7 @@ public class Details extends AppCompatActivity {
 
         textDate.setText("Date: "+finalString);
         textTask.setText("Task: "+aTime.getTask());
+        setTimerVisible();
     }
 
     private void initViews() {
@@ -143,7 +108,6 @@ public class Details extends AppCompatActivity {
         textTask = (TextView) findViewById(R.id.textView14);
         textMsg = (TextView) findViewById(R.id.textView20);
         textTot = (TextView) findViewById(R.id.textView21);
-
     }
 
     @Override
@@ -152,5 +116,55 @@ public class Details extends AppCompatActivity {
         intent.putExtra("dateRec",aTime.getDate());
         startActivity(intent);
         this.finish();
+    }
+
+    public void setTimerVisible(){
+        if(kType==1){
+            textMsg.setText("Task timer stopped.");
+            textTot.setVisibility(View.VISIBLE);
+            textTot.setText(getUpdatedTimer());
+        }
+        else if(kType== 2  ){
+            textTot.setVisibility(View.INVISIBLE);
+            textMsg.setText("Added successfully");
+        }
+        else if(kType== 4){
+            textMsg.setText("");
+            textTot.setText(getUpdatedTimer());
+            textTot.setVisibility(View.VISIBLE);
+        }
+        else if(  kType== 3){
+            textTot.setText(getUpdatedTimer());
+           // textTot.setVisibility(View.INVISIBLE);
+            textMsg.setText("Updated successfully");
+        }
+    }
+
+    public String getUpdatedTimer() {
+        SimpleDateFormat df = new SimpleDateFormat("hh:mm"); // HH for 0-23
+        df.setTimeZone(TimeZone.getTimeZone("GMT"));
+        //String time = df.format(d);
+        String min = "";int h = 0;
+        float diffInMillies = Float.valueOf(aTime.getTotal());
+        if (diffInMillies != 0) {
+            int m = Math.round(diffInMillies) / 60;
+             h = m / 60;
+
+            if (m > 59) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(Calendar.HOUR_OF_DAY, h);
+                calendar.set(Calendar.MINUTE, m);
+                    /*calendar.set(Calendar.MILLISECOND, 0);
+                    calendar.set(Calendar.SECOND, 37540);*/
+                min = new SimpleDateFormat("mm").format(calendar.getTime());
+            } else if (m < 10) {
+                min = "0" + m;
+            } else {
+                min = "" + m;
+            }
+
+
+        }
+        return "Total Time: " + h + ":" + min;
     }
 }

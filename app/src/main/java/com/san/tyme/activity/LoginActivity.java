@@ -92,7 +92,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             email = editEmail.getText().toString();
             password = MD5_Hash(editPass.getText().toString());
 
-            if(isNetworkConnected()&& email.length()>0 && password.length()>0){
+            if(isNetworkConnected()&& email.length()>0 && editPass.getText().toString().length()>0){
                 mProgressDialog = new ProgressDialog(this);
                 mProgressDialog.setMessage("Please wait...");
                 mProgressDialog.setCancelable(false);
@@ -102,22 +102,21 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 //String sleepTime = time.getText().toString();
                 runner.execute(subdomain,email,password);
             }
-            else if (isNetworkConnected() && email.length()==0 && editPass.getText().toString().length()==0){
-                new AlertDialog.Builder(this)
+            else if (email.length()==0 || editPass.getText().toString().length()==0){
+               /* new AlertDialog.Builder(this)
                         .setTitle("Invalid Details")
-                        /*.setMessage("It looks like your internet connection is off. Please turn it " +
-                                "on and try again")*/
+                        *//*.setMessage("It looks like your internet connection is off. Please turn it " +
+                                "on and try again")*//*
                         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                             }
-                        }).setIcon(android.R.drawable.ic_dialog_alert).show();
-
+                        }).setIcon(android.R.drawable.ic_dialog_alert).show();*/
                 if(email.length()==0 ){
-                    editEmail.setError("Enter valid Email Id");
+                    editEmail.setError("Email Id required");
                 }
 
                 if(editPass.getText().toString().length()==0){
-                    editPass.setError("Enter valid Password");
+                    editPass.setError("Password required");
                 }
             }
             else if(!isNetworkConnected()){
@@ -127,6 +126,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 "on and try again")
                         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
+
                             }
                         }).setIcon(android.R.drawable.ic_dialog_alert).show();
             }
@@ -142,9 +142,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private class AsyncTaskRunner extends AsyncTask<String, String, String> {
-
         private String status;
-
         @Override
         protected String doInBackground(String... params) {
             try {
@@ -233,12 +231,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 else {
                     new AlertDialog.Builder(LoginActivity.this)
                             .setTitle("Validation Failed")
-                            .setMessage("Please verify your credentials and try again")
+                            .setMessage("Enter valid credentials and try again!")
                             .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
                                 }
-                            }).setIcon(android.R.drawable.ic_dialog_alert).show();
+                            }).setIcon(R.drawable.ic_error_outline_black_24dp).show();
+
+                    editEmail.setError("Enter valid Email ID");
+
+                    editPass.setError("Enter Valid Password");
                 }
 
             } catch (JSONException e) {

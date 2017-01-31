@@ -229,6 +229,34 @@ public class TymeActivity extends AppCompatActivity
         pager.setAdapter(fragmentAdapter);
         dateList.setPager(pager);
 
+        /*dateList.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                DateItem dateItem = dateList.getDateAdapter().getItem(datePosition);
+
+                int day = dateItem.getDate().getDay();
+                if(day== 0 ){
+                    if(datePosition>6)
+                        dateList.scrollToPosition( datePosition-6);
+                    else
+                        dateList.scrollToPosition(1);
+                }
+
+                if (day== 1){
+                    dateList.scrollToPosition( datePosition+6);
+                }
+
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+            }
+        });*/
+
+        //dateList.setOnFocusChangeListener()
+
         dateList.setDatePickerListener(new DateRecyclerView.DatePickerListener() {
             @Override
             public void onDatePickerItemClick(DateItem dateItem, int position) {
@@ -236,46 +264,76 @@ public class TymeActivity extends AppCompatActivity
                         + " "+TymeApplication.reportDate, Toast.LENGTH_SHORT)
                         .show();*/
                // showTimerChanges( sdf.format(dateItem.getDate()));
-                //User clicked date item from top date picker
+               //  User clicked date item from top date picker
+                int day = dateItem.getDate().getDay();
+                if (day == 1){
+                    if(position<dateList.getDateAdapter().getItemCount()-6)
+                        dateList.scrollToPosition( position+7);
+                }
+
+                if (day == 2){
+                    if(position<dateList.getDateAdapter().getItemCount()-6)
+                        dateList.scrollToPosition( position+6);
+                }
+
+                if (day == 3){
+                    if(position<dateList.getDateAdapter().getItemCount()-6)
+                        dateList.scrollToPosition( position+5);
+                }
+
+                if (day == 4){
+                    if(position<dateList.getDateAdapter().getItemCount()-6)
+                        dateList.scrollToPosition( position+4);
+                }
+
+                if (day ==5){
+                    if(position<dateList.getDateAdapter().getItemCount()-6)
+                        dateList.scrollToPosition( position+3);
+                }
+                if (day ==6){
+                    if(position<dateList.getDateAdapter().getItemCount()-6)
+                        dateList.scrollToPosition( position+2);
+                }
+                if (day ==0){
+                    if(position<dateList.getDateAdapter().getItemCount()-6)
+                        dateList.scrollToPosition( position+1);
+                }
+
             }
 
             @Override
             public void onDatePickerPageSelected(int position) {
-                //User changed date using swipe (left/right)
-             //  showTimerChanges(currentDate);
-               // smoothScrollToPosition(position);
+                // User changed date using swipe (left/right)
+                // showTimerChanges(currentDate);
+                // smoothScrollToPosition(position);
                 dateList.getDateAdapter().setSelectedDate(position);
+                DateItem dateItem = dateList.getDateAdapter().getItem(position);
 
+                int day = dateItem.getDate().getDay();
+                if(day== 0 ){
+                    if(position>6)
+                        dateList.scrollToPosition(position-6);
+                    else
+                        dateList.scrollToPosition(0);
+                }
+
+                if (day == 1){
+                    if(position<dateList.getDateAdapter().getItemCount()-6)
+                        dateList.scrollToPosition( position+7);
+                }
             }
 
             @Override
             public void onDatePickerPageStateChanged(int state) {
-
                 //User changed page
             }
 
             @Override
             public void onDatePickerPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 //User changed page
-
-
                 DateItem dateItem = dateList.getDateAdapter().getItem(position);
-
-                int day = dateItem.getDate().getDay();
-                  if(day==0 ){
-                      if(position>6)
-                        dateList.scrollToPosition( position-6);
-                      else
-                          dateList.scrollToPosition(1);
-                  }
-
-                if (day== 1){
-
-                }
-
                 showTimerChanges(sdf.format(dateItem.getDate()));
 
-               // showTimerChanges( sdf.format());
             }
         });
 
@@ -311,6 +369,7 @@ public class TymeActivity extends AppCompatActivity
                     }
                 };
 
+                //dateList.scrollToPosition(0);
                 pager.setAdapter(fragmentAdapter);
                 dateList.setPager(pager);
                 pager.getAdapter().notifyDataSetChanged();
@@ -348,7 +407,6 @@ public class TymeActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-
         //updateViewpager();
     }
 
@@ -428,6 +486,7 @@ public class TymeActivity extends AppCompatActivity
             new DatePickerDialog(TymeActivity.this, dateListenerPick, myCalendar
                     .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
                     myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+
             return true;
         }
 
@@ -436,15 +495,18 @@ public class TymeActivity extends AppCompatActivity
 
     private void showTimerChanges(String currentDateandTime) {
 
-       // Toast.makeText(getBaseContext(), "in show "+TymeApplication.reportDate, Toast.LENGTH_LONG)
-       //         .show();
         Database db = new Database(TymeActivity.this);
         String tot = db.getdaysTotal(currentDateandTime);
         if(!tot.equals("")&& tot!=null) {
-            String min = "";
-            System.out.println("***tot "+tot);
+            String min,hr;
+            //System.out.println("***tot "+tot);
             int m = Math.round(Float.valueOf(tot).floatValue()) / 60;
             int h = m / 60;
+
+            if (h<10)
+                hr = "0"+h;
+            else
+                hr = ""+h;
 
             if (m > 60) {
                 Calendar calendar = Calendar.getInstance();
@@ -454,14 +516,20 @@ public class TymeActivity extends AppCompatActivity
                 calendar.set(Calendar.SECOND, 37540);*/
                 min = new SimpleDateFormat("mm").format(calendar.getTime());
             } else {
-                min = "" + m;
+                if (m<10) {
+                    min = "0" + m;
+                }
+                else
+                    min = ""+m;
+
+               // min = "" + m;
             }
 
-            meditText.setText("Total Hours\n" + h + ":" + min);
+            meditText.setText("Total Hours\n" + hr + ":" +min+" hrs");
             //((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle("Total- " + h + ":" + min);
         }
         else{
-            meditText.setText("Total Hours\n00 : 00");
+            meditText.setText("Total Hours\n00 : 00 hrs");
             // ((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle("Total- 00:00");
         }
     }
@@ -597,23 +665,28 @@ public class TymeActivity extends AppCompatActivity
             Bitmap mIcon11 = null;
             try {
                 response = client.newCall(request).execute();
+                if (response.isSuccessful()) {
+                    try {
+                        mIcon11 = BitmapFactory.decodeStream(response.body().byteStream());
+                    } catch (Exception e) {
+                        Log.e("Error", e.getMessage());
+                        e.printStackTrace();
+                    }
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            if (response.isSuccessful()) {
-                try {
-                    mIcon11 = BitmapFactory.decodeStream(response.body().byteStream());
-                } catch (Exception e) {
-                    Log.e("Error", e.getMessage());
-                    e.printStackTrace();
-                }
-            }
+
             return mIcon11;
         }
 
         protected void onPostExecute(Bitmap result) {
-            bmImage.setImageBitmap(getRoundedCornerBitmap(result,100));
-           // bmImage.setImageBitmap(result);
+            try {
+                bmImage.setImageBitmap(getRoundedCornerBitmap(result,100));
+            } catch (Exception e) {
+                bmImage.setImageBitmap(result);
+            }
+            // bmImage.setImageBitmap(result);
         }
     }
 

@@ -33,8 +33,6 @@
         android:visibility="gone"
         android:textColor="#ffff3f49"/>-->
 
-
-
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerview1"
             android:scrollbars="vertical"
@@ -61,7 +59,7 @@
             android:id="@+id/fabBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_add_black_24dp"
+            app:srcCompat="@drawable/ic_add_black_24dp"
             android:layout_gravity="bottom|right"
             android:clickable="true"
             app:layout_anchor="@+id/recyclerview1"

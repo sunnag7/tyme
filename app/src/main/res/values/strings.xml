@@ -24,4 +24,10 @@
     <string name="password">Password</string>
     <string name="i_forgot_my_password">I forgot my password</string>
     <string name="welcome_to">Welcome to</string>
+    <string name="example">example</string>
+    <string name="tyme_co">.tyme.co</string>
+    <string name="total">Total:</string>
+    <string name="edit">EDIT</string>
+    <string name="delete">DELETE</string>
+    <string name="resume">Resume</string>
 </resources>

@@ -43,6 +43,7 @@ import android.widget.Toast;
 import com.san.tyme.Database.Database;
 import com.san.tyme.R;
 
+import com.san.tyme.TymeActivity;
 import com.san.tyme.activity.Details;
 import com.san.tyme.model.Client;
 import com.san.tyme.model.Task;
@@ -86,12 +87,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private int lastPosition = -1, pos = 0;
     private Timer aTime ;
     private RecyclerViewAdapter adptr;
-
-    public RecyclerViewAdapter(Context context1,String date, ArrayList<Timer> ar){
+    TymeActivity tymeData;
+    private TextView tvHour;
+    public RecyclerViewAdapter(Context context1,String date, ArrayList<Timer> ar, TextView tvHours){
         context = context1;
         dt = date;
         tArr = ar;
         adptr = this;
+        tvHour = tvHours;
 
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, context.MODE_PRIVATE);
         String restoredText = prefs.getString("id", null);
@@ -101,20 +104,33 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         }
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder{
+    class ViewHolder extends RecyclerView.ViewHolder{
 
         TextView textView, textDescp, textTimer, textTask, textClient;
-        ImageView plPsimg, updimg,editImg;
+        //ImageView plPsimg, updimg,editImg;
+        Button  updimg,editImg;
         CardView card_view;
-        FrameLayout container;
+        //FrameLayout container;
+        Button plPsimg;
 
         ViewHolder(View v){
 
             super(v);
-            container = (FrameLayout) v.findViewById(R.id.item_layout_container);
+            /*container = (FrameLayout) v.findViewById(R.id.item_layout_container);
             plPsimg = (ImageView) v.findViewById(R.id.img5);
             updimg = (ImageView) v.findViewById(R.id.imageView3);
             editImg = (ImageView) v.findViewById(R.id.imageView5);
+            textDescp = (TextView)v.findViewById(R.id.textView10);
+            textView = (TextView)v.findViewById(R.id.textView9);
+            textTimer = (TextView)v.findViewById(R.id.textView13);
+            textTask = (TextView)v.findViewById(R.id.textView12);
+            textClient = (TextView)v.findViewById(R.id.textView22);
+            card_view = (CardView) v.findViewById(R.id.card_view);*/
+
+           // container = (FrameLayout) v.findViewById(R.id.item_layout_container);
+            plPsimg = (Button) v.findViewById(R.id.img5);
+            updimg = (Button) v.findViewById(R.id.imageView3);
+            editImg = (Button) v.findViewById(R.id.imageView5);
             textDescp = (TextView)v.findViewById(R.id.textView10);
             textView = (TextView)v.findViewById(R.id.textView9);
             textTimer = (TextView)v.findViewById(R.id.textView13);
@@ -126,7 +142,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public RecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
-        view1 = LayoutInflater.from(context).inflate(R.layout.time_tasker,parent,false);
+        //view1 = LayoutInflater.from(context).inflate(R.layout.time_tasker,parent,false);
+        view1 = LayoutInflater.from(context).inflate(R.layout.timer_item,parent,false);
         viewHolder1 = new ViewHolder(view1);
 
         return viewHolder1;
@@ -145,7 +162,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         if(!strTime.equals("0")){
             diffInMillies = Float.valueOf(totTime) +( uptime - Float.valueOf(strTime));
             final Animation startAnimation = AnimationUtils.loadAnimation(context, R.anim.blink_anim);
-            holder.plPsimg.setImageResource(R.drawable.ic_pause_circle_outline_black_24dp);
+           // holder.plPsimg.setImageResource(R.drawable.ic_pause_circle_outline_black_24dp);
+            holder.plPsimg.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_pause_circle_outline_black_24dp, 0, 0, 0);
+
+            holder.plPsimg.setText("PAUSE");
             holder.plPsimg.startAnimation(startAnimation);  // TODO: 10/31/2016
             holder.itemView.setSelected(true);
             pos = position;
@@ -180,7 +200,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.textTimer.setText(h+":"+min);
 
         if(!strTime.equals("0")) {
-
             final Handler mHandler = new Handler();
             TimerTask scanTask = new TimerTask() {
                 public void run() {
@@ -233,13 +252,17 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                         AsyncTaskSubmit aSub = new AsyncTaskSubmit();
                         aSub.execute("0");
 
-                        holder.plPsimg.setImageResource(R.drawable.ic_play_circle_filled_black_24dp);
+                        //   holder.plPsimg.setImageResource(R.drawable.ic_play_circle_outline_black_24dp);
+                        holder.plPsimg.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_play_circle_outline_black_24dp, 0, 0, 0);
+                        holder.plPsimg.setText("RESUME");
                     }
                     else if(aTime.getStarttime().equals("0") ){
                         AsyncTaskSubmit aSub = new AsyncTaskSubmit();
                         aSub.execute("1");
 
-                        holder.plPsimg.setImageResource(R.drawable.ic_pause_circle_outline_black_24dp);
+                       // holder.plPsimg.setImageResource(R.drawable.ic_pause_circle_outline_black_24dp);
+                        holder.plPsimg.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_pause_circle_outline_black_24dp, 0, 0, 0);
+                        holder.plPsimg.setText("PAUSE");
                         //holder.plPsimg.startAnimation(startAnimation);
                         //adptr.notifyDataSetChanged();
                         //pos = position;
@@ -275,7 +298,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.textDescp.setText(text);
         holder.textView.setText(tArr.get(position).getProject());
 
-        setAnimation(holder.container, position);
+       // setAnimation(holder.container, position);
 
         holder.card_view.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -293,7 +316,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             public void onClick(View v) {
                 if(strTime .equals("0") ){
                     spinnerExpandedEdit(tArr.get(position).getId());
-
                 }
             }
         });
@@ -378,6 +400,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                         db.deleteUser("" + id);
                         k = 0;
                         idUpd = id;
+                        tvHour.setText(showTimerChanges(dt));
                         //notifyDataSetChanged();
                         break;
                     }
@@ -389,7 +412,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 if (k!=0) {
                     Intent intent = new Intent(context, Details.class);
                     intent.putExtra("id", idUpd);
-                    intent.putExtra("type", k);
+                    intent.putExtra("type", 3);
                     context.startActivity(intent);
                     ((Activity) context).finish();
                     // notifyDataSetChanged();
@@ -412,6 +435,48 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         @Override
         protected void onProgressUpdate(String... text) {
             // finalResult.setText(text[0]);
+        }
+    }
+
+    //SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+    private String showTimerChanges(String currentDateandTime) {
+        String mi = "",min = "",hr ="";
+        Database db = new Database(context);
+        String tot = db.getdaysTotal(currentDateandTime);
+        if(!tot.equals("")&& tot!=null) {
+
+            System.out.println("***tot "+tot);
+            int m = Math.round(Float.valueOf(tot)) / 60;
+            int h = m / 60;
+
+            if (h<10)
+                hr = "0"+h;
+            else
+                hr = ""+h;
+
+            if (m > 60) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(Calendar.HOUR_OF_DAY, h);
+                calendar.set(Calendar.MINUTE, m);
+                /*calendar.set(Calendar.MILLISECOND, 0);
+                calendar.set(Calendar.SECOND, 37540);*/
+                min = new SimpleDateFormat("mm").format(calendar.getTime());
+            } else {
+                if (m<10) {
+                    min = "0" + m;
+                }
+                else
+                    min = ""+m;
+
+             //   min = "" + mi;
+            }
+
+            return "Total Hours:\n" + hr + ":" + min+" hrs" ;
+            //((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle("Total- " + h + ":" + min);
+        }
+        else{
+            return "Total Hours:\n00 : 00 hrs" ;
+            // ((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle("Total- 00:00");
         }
     }
 
@@ -464,7 +529,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         }
     }
 
-    String postTask1(String url, HashMap<String,String> hm) throws IOException {
+    private String postTask1(String url, HashMap<String, String> hm) throws IOException {
         // RequestBody body = RequestBody.create(JSON, json);
         FormBody.Builder formBuilder = new FormBody.Builder();
 
@@ -549,7 +614,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private HashMap<String,String> hm ;
     private String dateVal = "";
     private TextView editTotalTime,clientname;
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+    //private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
     private void spinnerExpandedEdit(final int id){
 
         Timer aTime = getDataVal(id);
@@ -562,9 +627,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         LayoutInflater inflater =((Activity) context).getLayoutInflater();
         final View dialogViewMain = inflater.inflate(R.layout.custom_dia, null);
         dialogBuilderMain.setView(dialogViewMain);
-
         final AlertDialog alertDialogMain = dialogBuilderMain.create();
-
+        alertDialogMain.setTitle("Edit Time Entry");
         final Spinner spinner = (Spinner) dialogViewMain.findViewById(R.id.spinner);
 
         // Spinner click listener
@@ -573,7 +637,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
 
@@ -670,8 +733,20 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         final TextView currentDate = (TextView) dialogViewMain.findViewById(R.id.editText6);
 
         //String currentDateandTime = sdf.format();
-        SimpleDateFormat sdfTemp = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
-        currentDate.setText(aTime.getDate());
+        SimpleDateFormat formatter = new SimpleDateFormat("E, MMM dd yyyy");
+
+       // String startDateString = "06/27/2007";
+        SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");
+        Date startDate; String newDateString = "";
+        try {
+            startDate = df.parse(aTime.getDate().toString());
+            newDateString = formatter.format(startDate);
+            System.out.println(newDateString );
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        currentDate.setText( newDateString );
 
         String text = "";
         byte[] data = Base64.decode(""+ aTime.getDescp(), Base64.DEFAULT);
@@ -703,6 +778,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         Button btnSubmit = (Button) dialogViewMain.findViewById(R.id.button3);
         Button btnCancel = (Button) dialogViewMain.findViewById(R.id.button2);
 
+        btnSubmit.setText("UPDATE");
         ImageButton imgCal = (ImageButton) dialogViewMain.findViewById(R.id.imageView4);
         imgCal.setVisibility(View.INVISIBLE);
         imgCal.setOnClickListener(new View.OnClickListener() {
