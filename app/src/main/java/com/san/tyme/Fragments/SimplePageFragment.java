@@ -58,19 +58,16 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -235,13 +232,23 @@ public class SimplePageFragment extends Fragment  implements TimePickerDialog.On
 
             }
         });*/
+
+     /*   ScheduledExecutorService scheduler =
+                Executors.newSingleThreadScheduledExecutor();
+
+        scheduler.scheduleAtFixedRate
+                (new Runnable() {
+                    public void run() {
+                        // call service
+                    }
+                }, 0, 10, TimeUnit.MINUTES);*/
     }
 
     private void showTimerChanges(String currentDateandTime) {
 
         db = new Database(getActivity());
-        String tot = db.getdaysTotal(currentDateandTime);
-        if(!tot.equals("")) {
+        long tot = db.getdaysTotal(currentDateandTime);
+        if(tot!=0) {
             String min = "";
             System.out.println("***tot "+tot);
             int m = Math.round(Float.valueOf(tot)) / 60;
@@ -319,7 +326,7 @@ public class SimplePageFragment extends Fragment  implements TimePickerDialog.On
         /* ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(context,
                  R.layout.spinner_text, strArrTask);*/
         // Drop down layout style - list view with radio button
-        dataAdapter.setDropDownViewResource( R.layout.spinner_text);
+        dataAdapter.setDropDownViewResource(R.layout.spinner_text);
         // dataAdapter.setDropDownViewResource(R.layout.spinner_text);
         for (int i =0;i<strArrTask.size();i++ ){
             dataAdapter.add(""+strArrTask.get(i));
@@ -420,14 +427,14 @@ public class SimplePageFragment extends Fragment  implements TimePickerDialog.On
                     String prName = projEdit.getText().toString();
                     long time = System.currentTimeMillis();
                     if (clName.length() > 0 && email.length() > 0) {
-                        String start_dt = "" + currentDate.getText().toString();
-                        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-                        Date date = null;
+                       // String start_dt = "" + currentDate.getText().toString();
+                        //DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+                        /*Date date = null;
                         try {
                             date = (Date) formatter.parse(start_dt);
                         } catch (ParseException e) {
                             e.printStackTrace();
-                        }
+                        }*/
                         //SimpleDateFormat newFormat = new SimpleDateFormat("MM-dd-yyyy");
                         // String finalString = sdf.format(date);
 
@@ -466,7 +473,15 @@ public class SimplePageFragment extends Fragment  implements TimePickerDialog.On
                             }) .setIcon(R.drawable.ic_error_outline_black_24dp).show();
                 }
                 else{
-                    spinner.performClick();
+                    new AlertDialog.Builder(context)
+                            .setTitle("Error!").setCancelable(true)
+                            .setMessage("Select Task type")
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            }) .setIcon(R.drawable.ic_error_outline_black_24dp).show();
+                   // spinner.performClick();
                 }
             }
         });
@@ -695,7 +710,7 @@ public class SimplePageFragment extends Fragment  implements TimePickerDialog.On
                         if(title.equals("Success")) {
                             Intent intent = new Intent(getActivity(), Details.class);
                             intent.putExtra("id",aTimer.getId());
-                            intent.putExtra("type", 0);
+                            intent.putExtra("type",2);
                             startActivity(intent);
                             getActivity().finish();
                             displayNotificationOne(aTimer.getId());

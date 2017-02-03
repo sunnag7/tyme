@@ -12,6 +12,7 @@ import com.san.tyme.model.Task;
 import com.san.tyme.model.Timer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by Sanny on 10/17/2016.
@@ -258,9 +259,7 @@ public class Database extends SQLiteOpenHelper {
     }
 
     public ArrayList<Task> getTasks() {
-
         ArrayList<Task> ar = new ArrayList<Task>();
-
         String selectQuery = "SELECT * FROM " + TABLE_TASKS;
         //Log.d("QUERY",""+selectQuery);
         SQLiteDatabase db = this.getReadableDatabase();
@@ -336,23 +335,39 @@ public class Database extends SQLiteOpenHelper {
         return ar;
     }
 
-    public String getdaysTotal(String date_req) {
+    public long getdaysTotal(String date_req) {
 
-        String date ="", tot = "";
+        long tot = 0;
         String selectQuery = "SELECT date, SUM(total) AS total FROM "+TABLE_RESULTS+" WHERE date = '"+date_req+"' GROUP BY date";
         //Log.d("QUERY",""+selectQuery);
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
         if (c.moveToFirst()) {
             do {
-                    date = ""+c.getString(c.getColumnIndex(RESULT_DATE));
-                    tot = ""+c.getString(c.getColumnIndex(RESULT_TOTAL_TIME));
+                tot = Long.parseLong(c.getString(c.getColumnIndex(RESULT_TOTAL_TIME)));
+            } while (c.moveToNext());
+        }
+        db.close();
+
+        return tot;
+    }
+
+    public double getdaysRunningTym(String date_req) {
+
+        double tot = 0;
+        String selectQuery = "SELECT "+RESULT_START+" FROM "+TABLE_RESULTS+" WHERE date = '"+date_req+"' AND "+RESULT_START+ "!= '0'";
+        //Log.d("QUERY",""+selectQuery);
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+        if (c.moveToFirst()) {
+            do {
+                tot = Double.parseDouble(c.getString(c.getColumnIndex(RESULT_START) ));
 
             } while (c.moveToNext());
         }
         db.close();
 
-        return ""+tot;
+        return tot;
     }
 
     public int getResultCount() {
@@ -453,6 +468,28 @@ public class Database extends SQLiteOpenHelper {
 
         values.put(RESULT_STOP, "0");
         values.put(RESULT_START, ""+startTime);
+        //values.put(R_ID, aRepID);
+        //updating row
+
+        int update = db.update(TABLE_RESULTS, values, RESULT_NET_ID + " = ?",
+                new String[] { String.valueOf(rID)});
+
+        db.close();
+        return update;
+    }
+
+    public int updateTimerWhole(int rID, Timer mTimer) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        //System.out.println("R_ISSYNC "+rID);
+        ContentValues values = new ContentValues();
+
+        values.put(RESULT_CLIENT, mTimer.getClient());
+        values.put(RESULT_PROJECT, mTimer.getProject());
+        values.put(RESULT_TASK, mTimer.getTask());
+       // values.put(RESULT_DATE, mTimer.getDate());
+        values.put(RESULT_DESCP, mTimer.getDescp());
+        values.put(RESULT_ISSYNCED, 1);
         //values.put(R_ID, aRepID);
         //updating row
 

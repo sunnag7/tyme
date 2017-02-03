@@ -30,4 +30,5 @@
     <string name="edit">EDIT</string>
     <string name="delete">DELETE</string>
     <string name="resume">Resume</string>
+    <string name="task_added_successfully">Task added successfully.</string>
 </resources>

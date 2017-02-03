@@ -64,9 +64,10 @@
             android:clickable="true"
             app:layout_anchor="@+id/recyclerview1"
             app:layout_anchorGravity="bottom|end"
-            app:layout_behavior="com.san.tyme.utils.FABScrollBehavior"
+
             android:layout_marginBottom="@dimen/activity_vertical_margin"
             android:layout_marginRight="@dimen/activity_horizontal_margin"
             app:borderWidth="0dp"/>
+        <!--app:layout_behavior="com.san.tyme.utils.FABScrollBehavior"-->
     </android.support.design.widget.CoordinatorLayout>
 </LinearLayout>

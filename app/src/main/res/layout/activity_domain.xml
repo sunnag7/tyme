@@ -30,8 +30,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/linText"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true">
+        android:layout_marginTop="40dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/textView6">
 
         <EditText
             android:layout_width="143dp"
@@ -59,24 +60,13 @@
 
     </LinearLayout>
 
-    <TextView
-        android:text="Sign in"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/background"
-        android:id="@+id/textView6"
-        android:textSize="24sp"
-        android:layout_above="@+id/linText"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="33dp" />
-
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/relWelcome"
-        android:layout_above="@+id/textView6"
+        android:layout_marginTop="40dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="29dp">
+        android:layout_alignParentTop="true">
 
         <TextView
             android:text="Welcome to"
@@ -96,5 +86,16 @@
             android:layout_toEndOf="@+id/textView3"
             android:id="@+id/imageView2" />
     </RelativeLayout>
+
+    <TextView
+        android:text="Sign in"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/background"
+        android:id="@+id/textView6"
+        android:textSize="24sp"
+        android:layout_marginTop="30dp"
+        android:layout_below="@+id/relWelcome"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

@@ -59,8 +59,6 @@ public class Details extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 onBackPressed() ;
-                /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();*/
             }
         });
     }
@@ -74,7 +72,7 @@ public class Details extends AppCompatActivity {
         textPro.setText(aTime.getProject().toUpperCase());
 
         textClient.setText("Client: "+aTime.getClient());
-        byte[] data = Base64.decode(""+aTime.getDescp().toString(), Base64.DEFAULT);
+        byte[] data = Base64.decode(""+ aTime.getDescp(), Base64.DEFAULT);
         try {
             text = new String(data, "UTF-8");
         } catch (UnsupportedEncodingException e) {
@@ -85,7 +83,8 @@ public class Details extends AppCompatActivity {
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         String start_dt = ""+aTime.getDate().toString();
-        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        //DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat formatter = new SimpleDateFormat("E, MMM dd yyyy");
         Date date = null;
         try {
             date = (Date) sdf.parse(start_dt);
@@ -96,6 +95,7 @@ public class Details extends AppCompatActivity {
         String finalString = formatter.format(date);
 
         textDate.setText("Date: "+finalString);
+
         textTask.setText("Task: "+aTime.getTask());
         setTimerVisible();
     }
@@ -124,19 +124,24 @@ public class Details extends AppCompatActivity {
             textTot.setVisibility(View.VISIBLE);
             textTot.setText(getUpdatedTimer());
         }
-        else if(kType== 2  ){
+        else if(kType== 2){
             textTot.setVisibility(View.INVISIBLE);
             textMsg.setText("Added successfully");
         }
-        else if(kType== 4){
+        else if(kType == 4){
             textMsg.setText("");
             textTot.setText(getUpdatedTimer());
             textTot.setVisibility(View.VISIBLE);
         }
-        else if(  kType== 3){
+        else if(kType == 3){
             textTot.setText(getUpdatedTimer());
            // textTot.setVisibility(View.INVISIBLE);
             textMsg.setText("Updated successfully");
+        }
+        else if(kType == 5){
+            textTot.setText(getUpdatedTimer());
+            // textTot.setVisibility(View.INVISIBLE);
+            textMsg.setText("Timer Resumed");
         }
     }
 
@@ -162,9 +167,11 @@ public class Details extends AppCompatActivity {
             } else {
                 min = "" + m;
             }
-
-
+            return "Total Time: " + h + ":" + min;
         }
-        return "Total Time: " + h + ":" + min;
+        else {
+            return "Total Time: 00:00";
+        }
+
     }
 }

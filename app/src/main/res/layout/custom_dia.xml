@@ -77,12 +77,13 @@
         android:background="#90000000" />
 
     <TextView
-        android:text="Client"
+        android:text=""
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
         android:layout_marginTop="5dp"
         android:paddingLeft="4dp"
+        android:visibility="gone"
         android:id="@+id/textView5" />
 
     <View

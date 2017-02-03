@@ -19,6 +19,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
@@ -74,6 +75,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
+import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
@@ -331,9 +337,20 @@ public class TymeActivity extends AppCompatActivity
             @Override
             public void onDatePickerPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 //User changed page
-                DateItem dateItem = dateList.getDateAdapter().getItem(position);
-                showTimerChanges(sdf.format(dateItem.getDate()));
+                final DateItem dateItem = dateList.getDateAdapter().getItem(position);
 
+                Database db = new Database(TymeActivity.this);
+                final double totrunning = db.getdaysRunningTym(sdf.format(dateItem.getDate()));
+
+               /*  ScheduledExecutorService scheduler =
+                        Executors.newSingleThreadScheduledExecutor();
+
+                scheduler.scheduleAtFixedRate
+                        (new Runnable() {
+                            public void run() {*/
+                                showTimerChanges(sdf.format(dateItem.getDate()),totrunning);
+                           /* }
+                        }, 0, 1, TimeUnit.MINUTES);*/
             }
         });
 
@@ -346,7 +363,6 @@ public class TymeActivity extends AppCompatActivity
                 myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
                 String dateDef = sdf1.format(myCalendar.getTime());
-
                 try {
                     dateList.setAdapter(new CustomDateAdapter(start,end,
                             PagerDatePickerDateFormat.DATE_PICKER_DD_MM_YYYY_FORMAT.parse(dateDef)));
@@ -365,14 +381,15 @@ public class TymeActivity extends AppCompatActivity
                         //showTimerChanges();
                         //updateMenuTitles(currentDate);
                         //invalidateOptionsMenu();
+                        // dateList.getDateAdapter().setSelectedDate(datePosition);
                         return SimplePageFragment.newInstance(position, date);
                     }
                 };
 
-                //dateList.scrollToPosition(0);
                 pager.setAdapter(fragmentAdapter);
                 dateList.setPager(pager);
                 pager.getAdapter().notifyDataSetChanged();
+             //   dateList.scrollToPosition(datePosition+7);
             }
         };
 
@@ -384,7 +401,6 @@ public class TymeActivity extends AppCompatActivity
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-
         mHeaderView = navigationView.getHeaderView(0);
 
         mDrawerHeaderTitle = (TextView) mHeaderView.findViewById(R.id.textView);
@@ -401,7 +417,7 @@ public class TymeActivity extends AppCompatActivity
         laptopCollection = new LinkedHashMap<String, List<String>>();
         createGroupList();
         createCollection();
-        exportDatabse("tyme.sqlite");
+        exportDatabase("tyme.sqlite");
     }
 
     @Override
@@ -493,14 +509,17 @@ public class TymeActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    private void showTimerChanges(String currentDateandTime) {
-
+    public void showTimerChanges(String currentDateandTime, double totrunning) {
         Database db = new Database(TymeActivity.this);
-        String tot = db.getdaysTotal(currentDateandTime);
-        if(!tot.equals("")&& tot!=null) {
-            String min,hr;
-            //System.out.println("***tot "+tot);
-            int m = Math.round(Float.valueOf(tot).floatValue()) / 60;
+        long tot = db.getdaysTotal(currentDateandTime);
+        if(tot!=0) {
+            String min,hr;int m = 0;
+            if (totrunning!=0) {
+                 m = Math.round(tot+getTimeUpdter(totrunning)) / 60;
+            }
+            else{
+                m = Math.round(tot) / 60;
+            }
             int h = m / 60;
 
             if (h<10)
@@ -528,8 +547,41 @@ public class TymeActivity extends AppCompatActivity
             meditText.setText("Total Hours\n" + hr + ":" +min+" hrs");
             //((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle("Total- " + h + ":" + min);
         }
+        else if(tot==0 && totrunning>0 ){
+            String min,hr;int m = 0;
+            if (totrunning!=0) {
+                m = Math.round(getTimeUpdter(totrunning)) / 60;
+            }
+            else{
+                m = Math.round(tot) / 60;
+            }
+            int h = m / 60;
+
+            if (h<10)
+                hr = "0"+h;
+            else
+                hr = ""+h;
+
+            if (m > 60) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(Calendar.HOUR_OF_DAY, h);
+                calendar.set(Calendar.MINUTE, m);
+                /*calendar.set(Calendar.MILLISECOND, 0);
+                calendar.set(Calendar.SECOND, 37540);*/
+                min = new SimpleDateFormat("mm").format(calendar.getTime());
+            } else {
+                if (m<10) {
+                    min = "0" + m;
+                }
+                else
+                    min = ""+m;
+
+                // min = "" + m;
+            }
+            meditText.setText("Total Hours\n" + hr + ":" +min+" hrs");
+        }
         else{
-            meditText.setText("Total Hours\n00 : 00 hrs");
+            meditText.setText("Total Hours\n00:00 hrs");
             // ((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle("Total- 00:00");
         }
     }
@@ -558,6 +610,13 @@ public class TymeActivity extends AppCompatActivity
             }
         }
     }*/
+
+    public float getTimeUpdter(double timeUpd){
+        float uptime = System.currentTimeMillis()/1000.0f;
+        float diffInMillies;
+        diffInMillies = /*Float.valueOf(totTime) + */(uptime - (float) timeUpd);
+      return   diffInMillies;
+    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -611,7 +670,7 @@ public class TymeActivity extends AppCompatActivity
         //System.out.println("GrpSize ##**"+groupList.get(0));
         for(int i = 0;i<groupList.size();i++){
             Client mClient = new Client();
-            mClient.setClient(groupList.get(i).toString());
+            mClient.setClient(groupList.get(i));
             Database db = new Database(this);
             mClient.setmClProjArr(db.getClients(groupList.get(i)));
 
@@ -647,10 +706,15 @@ public class TymeActivity extends AppCompatActivity
 
     public OkHttpClient client = new OkHttpClient();
 
+    /*@Override
+    public void UpdateMyText(String mystr) {
+        meditText.setText(mystr);
+    }*/
+
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
 
-        public DownloadImageTask(ImageView bmImage) {
+        DownloadImageTask(ImageView bmImage) {
             this.bmImage = bmImage;
         }
 
@@ -690,7 +754,7 @@ public class TymeActivity extends AppCompatActivity
         }
     }
 
-    public void exportDatabse(String databaseName) {
+    public void exportDatabase(String databaseName) {
         try {
             File sd = Environment.getExternalStorageDirectory();
             File data = Environment.getDataDirectory();
@@ -709,7 +773,7 @@ public class TymeActivity extends AppCompatActivity
                     dst.close();
                 }
             }
-        } catch (Exception e) {
+        } catch (Exception ignored) {
 
         }
     }
@@ -786,7 +850,6 @@ public class TymeActivity extends AppCompatActivity
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
             return status;
         }
 
@@ -854,7 +917,7 @@ public class TymeActivity extends AppCompatActivity
                 Toast.makeText(getBaseContext(), "Unable to load data. ", Toast.LENGTH_SHORT)
                         .show();
             }
-            exportDatabse("tyme.sqlite");
+            exportDatabase("tyme.sqlite");
 
             //SimplePageFragment.newInstance(datePosition, dateFrg);
             }
@@ -893,19 +956,7 @@ public class TymeActivity extends AppCompatActivity
             return null;
     }
 
-    public FragmentRefreshListener getFragmentRefreshListener() {
-        return fragmentRefreshListener;
-    }
 
-    public void setFragmentRefreshListener(FragmentRefreshListener fragmentRefreshListener) {
-        this.fragmentRefreshListener = fragmentRefreshListener;
-    }
-
-    private FragmentRefreshListener fragmentRefreshListener;
-
-    public interface FragmentRefreshListener{
-        void onRefresh();
-    }
 
         public Bitmap getRoundedCornerBitmap(Bitmap bitmap, int pixels) {
             Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
@@ -915,12 +966,11 @@ public class TymeActivity extends AppCompatActivity
             final Paint paint = new Paint();
             final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
             final RectF rectF = new RectF(rect);
-            final float roundPx = pixels;
 
             paint.setAntiAlias(true);
             canvas.drawARGB(0, 0, 0, 0);
             paint.setColor(color);
-            canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
+            canvas.drawRoundRect(rectF, (float) pixels, (float) pixels, paint);
 
             paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
             canvas.drawBitmap(bitmap, rect, rect, paint);
@@ -961,6 +1011,11 @@ public class TymeActivity extends AppCompatActivity
         }
     };
 
+
+    public TextView getTextView() {
+       // TextView txtView = (TextView)findViewById(R.id.textView24);
+        return meditText;
+    }
 }
 
   /*  byte[] data = text.getBytes("UTF-8");

@@ -238,9 +238,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 }
                             }).setIcon(R.drawable.ic_error_outline_black_24dp).show();
 
-                    editEmail.setError("Enter valid Email ID");
+                 /*   editEmail.setError("Enter valid Email ID");
 
-                    editPass.setError("Enter Valid Password");
+                    editPass.setError("Enter Valid Password");*/
                 }
 
             } catch (JSONException e) {
@@ -260,7 +260,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             // finalResult.setText(text[0]);
         }
     }
-
 
     private boolean isNetworkConnected() {
         ConnectivityManager connMgr = (ConnectivityManager)

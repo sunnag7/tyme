@@ -74,10 +74,12 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import static com.san.tyme.TymeActivity.meditText;
+
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>{
 
     private Context context;
-    View view1;
+    private View view1;
     private ViewHolder viewHolder1;
     private ArrayList<Timer> tArr;
     private static final String PREFS_NAME = "TymePref";
@@ -198,46 +200,50 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         //long days = TimeUnit.MINUTES.toDays(diffInMillies);
         holder.textTimer.setText(h+":"+min);
-
+        //final TextView txtView = (TextView) ((Activity)context).findViewById(R.id.textView24);
         if(!strTime.equals("0")) {
             final Handler mHandler = new Handler();
             TimerTask scanTask = new TimerTask() {
                 public void run() {
                     mHandler.post(new Runnable() {
                         public void run() {
+
                             float uptime = System.currentTimeMillis()/1000.0f;
                             float diffInMillies;
-                            diffInMillies = Float.valueOf(totTime) +(uptime - Float.valueOf(strTime));
+                            diffInMillies = Float.valueOf(totTime) + (uptime - Float.valueOf(strTime));
 
                             SimpleDateFormat df = new SimpleDateFormat("hh:mm"); // HH for 0-23
                             df.setTimeZone(TimeZone.getTimeZone("GMT"));
 
                             int m = Math.round(diffInMillies)/60;
                             int h = m/60;
-                            String min = "";
-
+                            String min;
+                            //  txtUpdate(showTimerChanges(dt,m));
+                            //  txtView.setText(showTimerChanges(dt,m));
+                            //  meditText.setText(showTimerChanges(dt,m));
                             if(m>59){
                                 Calendar calendar = Calendar.getInstance();
                                 calendar.set(Calendar.HOUR_OF_DAY, h);
                                 calendar.set(Calendar.MINUTE, m);
                                 min = new SimpleDateFormat("mm").format(calendar.getTime());
                             }
-                            else
-                            if(m<10){
+                            else if(m<10){
                                 min = "0"+m;
                             }
                             else {
                                 min = ""+m;
                             }
-
                             //long days = TimeUnit.MINUTES.toDays(diffInMillies);
                             holder.textTimer.setText(h+":"+min);
                         }
                     });
                 }
             };
-            t.schedule(scanTask, 0, 6000);
+            t.scheduleAtFixedRate(scanTask,0,6000);
         }
+        /* else{
+            txtUpdate(showTimerChanges(dt,0));
+        }*/
 
         holder.plPsimg.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -273,7 +279,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 else{
                     displayDialog("No Network!","Unable to connect.");
                 }
-                 //notifyDataSetChanged();
+                //notifyDataSetChanged();
             }
         });
 
@@ -377,7 +383,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                         int id = Integer.parseInt(mJsonObj.getString("id"));
                         String strTime = "" + mJsonObj.getString("resume_starttime");
                         db.updateTime(id, "0", strTime);
-                        k = 2;
+                        k = 5;
                         idUpd = id;
 
                         break;
@@ -390,6 +396,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                         String strTime = "" + mJsonObj.getString("resume_starttime");
                         int resID = mJsonObj.getInt("resume_id");
                         db.updateTime(resID, "0", strTime);
+
                         k = 3;
                         idUpd = id;
 
@@ -400,26 +407,34 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                         db.deleteUser("" + id);
                         k = 0;
                         idUpd = id;
-                        tvHour.setText(showTimerChanges(dt));
+                        tvHour.setText(showTimerChanges(dt,0));
                         //notifyDataSetChanged();
                         break;
                     }
                     case "Failed":
                         Toast.makeText(context, "Something went wrong, please try again", Toast.LENGTH_LONG).show();
                         break;
-                }
-
-                if (k!=0) {
-                    Intent intent = new Intent(context, Details.class);
-                    intent.putExtra("id", idUpd);
-                    intent.putExtra("type", 3);
-                    context.startActivity(intent);
-                    ((Activity) context).finish();
-                    // notifyDataSetChanged();
+                    case "success_edit":{
+                        int id =  mJsonObj.getInt("id" );
+                        String tot = "" + mJsonObj.getString("total");
+                        db.updateTime(id, tot, "0");
+                        k = 3;
+                        idUpd = id;
+                        db.updateTimerWhole(id,dbTimer);
+                    }
                 }
             } catch (JSONException e) {
                 Toast.makeText(context,"Something went wrong, please try again",Toast.LENGTH_LONG).show();
                 e.printStackTrace();
+            }
+
+            if (k!=0) {
+                Intent intent = new Intent(context, Details.class);
+                intent.putExtra("id", idUpd);
+                intent.putExtra("type", k);
+                context.startActivity(intent);
+                ((Activity) context).finish();
+                // notifyDataSetChanged();
             }
         }
 
@@ -439,14 +454,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
     //SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-    private String showTimerChanges(String currentDateandTime) {
-        String mi = "",min = "",hr ="";
+    private String showTimerChanges(String currentDateandTime,long currentMillis) {
+        String min = "",hr ="";
         Database db = new Database(context);
-        String tot = db.getdaysTotal(currentDateandTime);
-        if(!tot.equals("")&& tot!=null) {
+        long tot = (db.getdaysTotal(currentDateandTime) );
+       // tot = tot + currentMillis;
+        if(tot!=0) {
 
             System.out.println("***tot "+tot);
-            int m = Math.round(Float.valueOf(tot)) / 60;
+            int m = Math.round((float) tot) / 60;
+            m= (int) (m+currentMillis);
             int h = m / 60;
 
             if (h<10)
@@ -470,7 +487,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
              //   min = "" + mi;
             }
-
             return "Total Hours:\n" + hr + ":" + min+" hrs" ;
             //((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle("Total- " + h + ":" + min);
         }
@@ -614,11 +630,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private HashMap<String,String> hm ;
     private String dateVal = "";
     private TextView editTotalTime,clientname;
+    Timer dbTimer;
     //private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
     private void spinnerExpandedEdit(final int id){
-
         Timer aTime = getDataVal(id);
-
         laptopCollection = new LinkedHashMap<String, List<String>>();
         createGroupList();
         createCollection();
@@ -831,12 +846,19 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                         hm.put("project", "" + prName);
                         hm.put("email", "" + email);
                         hm.put("client", "" + clName);
-                       // hm.put("date", "" + currentDate ); //issue with date always paassing +1day or -1
+                        // hm.put("date", "" + currentDate ); //issue with date always paassing +1day or -1
                         hm.put("desc", "" + editDesc.getText().toString());
                         hm.put("task", "" + spinner.getSelectedItem().toString());
-                       // hm.put("time", "" + (time1 / 1000.0f));
+                        // hm.put("time", "" + (time1 / 1000.0f));
                         hm.put("total", "" + time1);
                         hm.put("subdomain", "" + subdomain);
+
+                        dbTimer = new Timer();
+                        dbTimer.setId(id);
+                        dbTimer.setProject(prName);
+                        dbTimer.setDescp(editDesc.getText().toString());
+                        dbTimer.setClient(clName);
+                        dbTimer.setTask(spinner.getSelectedItem().toString());
 
                         if (isNetworkConnected() && hm.size() > 0) {
                             AsyncTaskSubmit runner = new AsyncTaskSubmit();
@@ -1019,5 +1041,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             timeDta = " " + h + ":" + min;
         }
         return timeDta;
+    }
+
+    public void txtUpdate(String str) {
+        TymeActivity obj = new TymeActivity();
+        TextView tv = obj.getTextView();
+        tv.setText(str);
     }
 }
