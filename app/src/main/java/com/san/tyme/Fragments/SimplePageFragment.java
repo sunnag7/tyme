@@ -512,7 +512,6 @@ public class SimplePageFragment extends Fragment  implements TimePickerDialog.On
 
     private String updateLabel() {
        // SimpleDateFormat sdfd = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
-
         return formatter.format(myCalendar.getTime());
     }
 
@@ -562,7 +561,6 @@ public class SimplePageFragment extends Fragment  implements TimePickerDialog.On
     }
 
     private class AsyncTaskSubmit extends AsyncTask<String, String, String> {
-
         private String status;
         ProgressDialog progressDialog;
         @Override
@@ -713,7 +711,7 @@ public class SimplePageFragment extends Fragment  implements TimePickerDialog.On
                             intent.putExtra("type",2);
                             startActivity(intent);
                             getActivity().finish();
-                            displayNotificationOne(aTimer.getId());
+                            //displayNotificationOne(aTimer.getId());
                         }
                         dialog.dismiss();
                     }
@@ -777,7 +775,7 @@ public class SimplePageFragment extends Fragment  implements TimePickerDialog.On
         // Increase notification number every time a new notification arrives
         mBuilder.setNumber(++numMessagesOne);
         // Creates an explicit intent for an Activity in your app
-        Intent resultIntent = new Intent(getActivity(), Details.class);
+        Intent resultIntent = new Intent(getActivity(), TymeActivity.class);
         //resultIntent.putExtra("notificationId", notificationIdOne);
         resultIntent.putExtra("id", id);
         resultIntent.putExtra("type", 0);

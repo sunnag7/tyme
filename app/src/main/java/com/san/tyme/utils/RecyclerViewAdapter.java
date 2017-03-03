@@ -292,16 +292,19 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             }
         });
 
-        byte[] data = Base64.decode(""+ tArr.get(position).getDescp(), Base64.DEFAULT);
-        try {
-            text = new String(data, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+       /* if (tArr.get(position).getDescp()!=null) {
+            try {
+                byte[] data = Base64.decode("" + tArr.get(position).getDescp(), Base64.DEFAULT);
+                text = new String(data, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }*/
+       // holder.textDescp.setFocusable(false);
 
         holder.textTask.setText(tArr.get(position).getTask());
         holder.textClient.setText("("+ tArr.get(position).getClient() +")");
-        holder.textDescp.setText(text);
+      //  holder.textDescp.setText(text);
         holder.textView.setText(tArr.get(position).getProject());
 
        // setAnimation(holder.container, position);
@@ -320,8 +323,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.editImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(strTime .equals("0") ){
+                if(strTime.equals("0") ){
                     spinnerExpandedEdit(tArr.get(position).getId());
+                }
+                else{
+                    Toast.makeText(context, "Timer might be running, please stop timer before edit", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -767,11 +773,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         byte[] data = Base64.decode(""+ aTime.getDescp(), Base64.DEFAULT);
         try {
             text = new String(data, "UTF-8");
+            editDesc.setText(""+text);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
 
-        editDesc.setText(""+text);
+
         //editDesc.setText(aTime.getDescp());
 
         editTotalTime.setText(setTimerTotal(aTime));

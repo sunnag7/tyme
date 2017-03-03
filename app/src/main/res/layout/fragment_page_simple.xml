@@ -64,7 +64,6 @@
             android:clickable="true"
             app:layout_anchor="@+id/recyclerview1"
             app:layout_anchorGravity="bottom|end"
-
             android:layout_marginBottom="@dimen/activity_vertical_margin"
             android:layout_marginRight="@dimen/activity_horizontal_margin"
             app:borderWidth="0dp"/>

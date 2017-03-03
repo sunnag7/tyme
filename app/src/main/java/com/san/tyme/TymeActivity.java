@@ -358,11 +358,13 @@ public class TymeActivity extends AppCompatActivity
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear,
                                   int dayOfMonth) {
+
                 myCalendar.set(Calendar.YEAR, year);
                 myCalendar.set(Calendar.MONTH, monthOfYear);
                 myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
-                String dateDef = sdf1.format(myCalendar.getTime());
+                String dateDef = sdf.format(myCalendar.getTime());
+               /* String dateDef = sdf1.format(myCalendar.getTime());
                 try {
                     dateList.setAdapter(new CustomDateAdapter(start,end,
                             PagerDatePickerDateFormat.DATE_PICKER_DD_MM_YYYY_FORMAT.parse(dateDef)));
@@ -389,8 +391,25 @@ public class TymeActivity extends AppCompatActivity
                 pager.setAdapter(fragmentAdapter);
                 dateList.setPager(pager);
                 pager.getAdapter().notifyDataSetChanged();
-             //   dateList.scrollToPosition(datePosition+7);
+                //   dateList.scrollToPosition(datePosition+7);*/
+
+
+               /* Intent intent = new Intent(TymeActivity.this, TymeActivity.class);
+                intent.putExtra("dateRec",aTime.getDate());
+                startActivity(intent);
+                this.finish();*/
+
+                Intent intent = new Intent(TymeActivity.this, TymeActivity.class);
+                intent.putExtra("dateRec",dateDef);
+                overridePendingTransition(0,0);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                finish();
+                overridePendingTransition( 0, 0);
+                startActivity(intent);
+                //
+
             }
+
         };
 
         //coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
@@ -812,6 +831,7 @@ public class TymeActivity extends AppCompatActivity
         }
         return false;
     }
+
     /*public void showToast(String msg, int type){
 
         Snackbar snackbar = Snackbar
@@ -836,9 +856,7 @@ public class TymeActivity extends AppCompatActivity
     }*/
 
     private class AsyncTaskFetch extends AsyncTask<String, String, String> {
-
         private String status;
-
         @Override
         protected String doInBackground(String... params) {
 
